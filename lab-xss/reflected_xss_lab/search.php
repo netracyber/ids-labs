@@ -3,8 +3,8 @@ session_start();
 require_once __DIR__ . '/FlagGenerator.php';
 
 $flagGen = new FlagGenerator();
-$flag = "IDS{fdc13e38eb7c4bf9f157cab4a4304c}";
-$_SESSION['flag'] = "IDS{fdc13e38eb7c4bf9f157cab4a4304c}";
+$flag = $flagGen->generate_flag();
+$_SESSION['flag'] = $flag;
 
 // Get the search term from the GET request
 $searchTerm = isset($_GET['search']) ? $_GET['search'] : '';
@@ -126,11 +126,12 @@ foreach ($xssPatterns as $pattern) {
         <?php if ($xssDetected): ?>
         <div class="flag">
             <p>Congratulations! You've successfully executed an XSS attack!</p>
-            <p>Flag: <strong><?php echo "IDS{fdc13e38eb7c4bf9f157cab4a4304c}"; ?></strong></p>
+            <p>Flag: <strong><?php echo htmlspecialchars($flag); ?></strong></p>
         </div>
-        <script>
-            alert("Success! XSS payload detected.\\nFlag: <?php echo "IDS{fdc13e38eb7c4bf9f157cab4a4304c}"; ?>");
-        </script>
+        <?php else: ?>
+        <div class="flag" style="background-color: #f8d7da; border-color: #f5c6cb; color: #721c24;">
+            <p>Try harder! Submit a valid XSS payload to get the flag.</p>
+        </div>
         <?php endif; ?>
 
     </div>

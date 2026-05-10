@@ -1,5 +1,6 @@
 <?php
 session_start();
+ob_start();
 require_once __DIR__ . '/FlagGenerator.php';
 
 // ============ TRACKING ============
@@ -19,19 +20,51 @@ function trackFlag($labId, $flag) {
 trackHit('xss-js-string');
 // ============ END TRACKING ============
 
+// Generate dynamic flag using FlagGenerator
 $flagGen = new FlagGenerator();
-$flag = "IDS{92798f74bc5cb240a73f2c9a8660c5ef}";
-$_SESSION['flag'] = "IDS{92798f74bc5cb240a73f2c9a8660c5ef}";
+$flag = $flagGen->generate_flag();
+$_SESSION['flag'] = $flag;
+
+// Set flag in a cookie (non-httpOnly) so JS can read it
+// Must be called BEFORE any output - ob_start() above ensures this
+setcookie('js_string_flag', $flag, time() + 3600, '/', '', false, false);
 
 // Get the search query from the GET parameter
 $search = isset($_GET['search']) ? $_GET['search'] : '';
 
-// HTML encode angle brackets to simulate the scenario where angle brackets are encoded
-$search = str_replace('<', '&lt;', $search);
-$search = str_replace('>', '&gt;', $search);
+// XSS pattern detection - check for common XSS payloads
+$xss_patterns = [
+    '/alert\s*\(/i',
+    '/confirm\s*\(/i',
+    '/prompt\s*\(/i',
+    '/document\.cookie/i',
+    '/<script/i',
+    '/onerror/i',
+    '/onload/i',
+    '/onclick/i',
+    '/javascript:/i',
+    '/eval\s*\(/i',
+];
 
-// Also encode other potentially dangerous characters for HTML context
-$search = htmlspecialchars($search, ENT_QUOTES, 'UTF-8');
+$xss_detected = false;
+foreach ($xss_patterns as $pattern) {
+    if (preg_match($pattern, $search)) {
+        $xss_detected = true;
+        $_SESSION['xss_solved'] = true;
+        trackFlag('xss-js-string', $flag);
+        break;
+    }
+}
+
+// For the JS string context, we encode angle brackets to prevent breaking out
+// of HTML, but we do NOT escape quotes or backslashes - this is the vulnerability.
+// htmlspecialchars with ENT_QUOTES would also encode quotes, making the XSS impossible.
+// We intentionally only encode < and > so the JS string can be broken out of.
+$search_html_safe = str_replace('<', '&lt;', $search);
+$search_html_safe = str_replace('>', '&gt;', $search_html_safe);
+
+// For the HTML template value attribute, we DO use full escaping
+$search_attr_safe = htmlspecialchars($search, ENT_QUOTES, 'UTF-8');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -117,6 +150,17 @@ $search = htmlspecialchars($search, ENT_QUOTES, 'UTF-8');
             color: #7f8c8d;
             margin-top: 30px;
         }
+        #xss-result {
+            display: none;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 5px;
+            color: #155724;
+            text-align: center;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -124,25 +168,25 @@ $search = htmlspecialchars($search, ENT_QUOTES, 'UTF-8');
         <h1>SecureShop</h1>
         <p>Find the best deals on electronics, clothing, and more</p>
     </div>
-    
+
     <div class="nav">
         <a href="index.html">Home</a>
         <a href="#">Categories</a>
         <a href="#">Deals</a>
         <a href="#">Contact</a>
     </div>
-    
+
     <div class="container">
         <div class="search-box">
             <form id="searchForm" method="GET">
-                <input type="text" name="search" id="searchInput" placeholder="Search products..." value="<?php echo $search; ?>">
+                <input type="text" name="search" id="searchInput" placeholder="Search products..." value="<?php echo $search_attr_safe; ?>">
                 <button type="submit">Search</button>
             </form>
         </div>
 
         <div id="results" class="results">
-            <div class="search-results-header">Search Results for: <?php echo $search; ?></div>
-            
+            <div class="search-results-header">Search Results for: <?php echo $search_attr_safe; ?></div>
+
             <div id="searchResults">
                 <div class="product">
                     <h4>Smartphone X1 - $499.99</h4>
@@ -162,27 +206,26 @@ $search = htmlspecialchars($search, ENT_QUOTES, 'UTF-8');
                 </div>
             </div>
         </div>
+
+        <div id="xss-result"></div>
     </div>
-    
+
     <div class="footer">
         <p>&copy; 2026 SecureShop. All rights reserved.</p>
     </div>
 
     <script>
         // VULNERABLE CODE: The search query is reflected inside a JavaScript string
-        // This creates a reflected XSS vulnerability when the string is not properly escaped
-        // Angle brackets are HTML encoded, but other characters like quotes and backslashes are not handled
-        var searchQuery = "<?php echo $search; ?>";
-        
+        // Angle brackets are HTML encoded to prevent new tags, but quotes are NOT escaped.
+        // This allows breaking out of the JS string context using " or '
+        var searchQuery = "<?php echo $search_html_safe; ?>";
+
         // Track the search query for analytics
         console.log("Search query: " + searchQuery);
-        
-        // Check if the search query contains XSS payload to show the flag
-        if (searchQuery.includes('alert(1)') || searchQuery.includes('alert(1)-') || searchQuery.includes('-alert(1)')) {
-            setTimeout(function() {
-                alert('Congratulations! Flag: <?php echo "IDS{92798f74bc5cb240a73f2c9a8660c5ef}"; ?>');
-            }, 100);
-        }
+
+        // XSS detection: check if the search resulted in successful XSS execution
+        // The flag is stored in a cookie and should be read via document.cookie
     </script>
 </body>
 </html>
+<?php ob_end_flush(); ?>

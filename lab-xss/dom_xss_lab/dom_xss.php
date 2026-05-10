@@ -3,8 +3,9 @@ session_start();
 require_once __DIR__ . '/FlagGenerator.php';
 
 $flagGen = new FlagGenerator();
-$flag = "IDS{6326ea06ab28fe9c08cd27189395a62e}";
-$_SESSION['flag'] = "IDS{6326ea06ab28fe9c08cd27189395a62e}";
+$flag = $flagGen->generate_flag();
+$_SESSION['flag'] = $flag;
+setcookie('dom_xss_flag', $flag, time() + 3600, '/', '', false, false);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -115,8 +116,15 @@ $_SESSION['flag'] = "IDS{6326ea06ab28fe9c08cd27189395a62e}";
             // Check if the search query contains common XSS patterns to show the flag
             const xssPattern = /(<script|on\w+\s*=|<img[^>]*onerror\s*=|<svg[^>]*onload\s*=|javascript:|<iframe|<object|<embed|<div[^>]*onclick\s*=|<a[^>]*onmouseover\s*=)/i;
             if (xssPattern.test(searchQuery)) {
-                // Show success message and flag
-                document.write('<div style="position: fixed; top: 60px; right: 10px; background-color: #d4edda; padding: 15px; border: 1px solid #c3e6cb; border-radius: 4px; color: #155724; font-weight: bold;">Congratulations! You\'ve successfully executed a DOM XSS attack!<br>Flag: <strong><?php echo "IDS{6326ea06ab28fe9c08cd27189395a62e}"; ?></strong></div>');
+                // Show success message and flag from cookie
+                function getCookieVal(name) {
+                    var value = '; ' + document.cookie;
+                    var parts = value.split('; ' + name + '=');
+                    if (parts.length === 2) return parts.pop().split(';').shift();
+                    return '';
+                }
+                var flagValue = getCookieVal('dom_xss_flag') || 'FLAG_PLACEHOLDER';
+                document.write('<div style="position: fixed; top: 60px; right: 10px; background-color: #d4edda; padding: 15px; border: 1px solid #c3e6cb; border-radius: 4px; color: #155724; font-weight: bold;">Congratulations! You\'ve successfully executed a DOM XSS attack!<br>Flag: <strong>' + flagValue + '</strong></div>');
             }
         }
     </script>

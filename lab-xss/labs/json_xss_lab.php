@@ -1,3 +1,9 @@
+<?php
+require_once __DIR__ . '/FlagGenerator.php';
+$flagGen = new FlagGenerator();
+$flag = $flagGen->generate_flag();
+setcookie('json_xss_flag', $flag, time()+3600, '/', '', false, false);
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -97,16 +103,27 @@
 
         <div id="flagContainer" class="flag">
             <h3>Congratulations!</h3>
-            <p>Flag: IDS{b5eff72a5c19991966501c9e47a81025}</p>
+            <p>Flag: <span id="flagText"></span></p>
         </div>
     </div>
 
     <script>
+        function getFlagFromCookie() {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var c = cookies[i].trim();
+                if (c.startsWith('json_xss_flag=')) {
+                    return c.substring('json_xss_flag='.length);
+                }
+            }
+            return '';
+        }
+
         // Simulate API response with potential XSS vulnerability
         function fetchUserDetails() {
             var username = document.getElementById('usernameInput').value;
             var outputDiv = document.getElementById('output');
-            
+
             // Simulate API response
             var mockApiResponse = {
                 username: username,
@@ -114,11 +131,11 @@
                 bio: "User bio for " + username,
                 profilePic: "/images/" + username + ".jpg"
             };
-            
+
             // VULNERABLE: Converting JSON to string and inserting into HTML
             // This could be vulnerable if the JSON contains HTML/JS
             var responseString = JSON.stringify(mockApiResponse, null, 2);
-            
+
             // Also simulate a scenario where the response is used in HTML context
             var htmlOutput = `
                 <h3>User Details:</h3>
@@ -127,10 +144,10 @@
                 <p><strong>Bio:</strong> ${mockApiResponse.bio}</p>
                 <img src="${mockApiResponse.profilePic}" alt="Profile Picture">
             `;
-            
+
             // VULNERABLE: Directly inserting user data into HTML
             outputDiv.innerHTML = htmlOutput;
-            
+
             // Check for XSS execution
             setTimeout(checkForXSS, 100);
         }
@@ -146,12 +163,16 @@
                 username.toLowerCase().includes('onload') ||
                 username.toLowerCase().includes('img src=')) {
 
-                document.getElementById('flagContainer').style.display = 'block';
+                var flagValue = getFlagFromCookie();
+                if (flagValue) {
+                    document.getElementById('flagText').textContent = flagValue;
+                    document.getElementById('flagContainer').style.display = 'block';
 
-                // Show alert with flag when XSS is detected
-                setTimeout(function() {
-                    alert('Congratulations! Flag: IDS{b5eff72a5c19991966501c9e47a81025}');
-                }, 100);
+                    // Show alert with flag when XSS is detected
+                    setTimeout(function() {
+                        alert('Congratulations! Flag: ' + flagValue);
+                    }, 100);
+                }
             }
         }
     </script>

@@ -20,8 +20,9 @@ trackHit('xss-stored-href');
 // ============ END TRACKING ============
 
 $flagGen = new FlagGenerator();
-$flag = "IDS{45f13c540e8997d935911c9987e167f6}";
-$_SESSION['flag'] = "IDS{45f13c540e8997d935911c9987e167f6}";
+$flag = $flagGen->generate_flag();
+$_SESSION['flag'] = $flag;
+setcookie('stored_href_flag', $flag, time()+3600, '/', '', false, false);
 
 // Initialize comments array if it doesn't exist
 if (!isset($_SESSION['comments'])) {
@@ -98,7 +99,18 @@ function displayComments() {
                 const href = link.getAttribute('href');
                 if (href && (href.includes('javascript:alert(1)') || href.includes('alert(1)'))) {
                     setTimeout(function() {
-                        alert('Congratulations! Flag: <?php echo "IDS{45f13c540e8997d935911c9987e167f6}"; ?>');
+                        var cookies = document.cookie.split(';');
+                        var flagValue = '';
+                        for (var i = 0; i < cookies.length; i++) {
+                            var c = cookies[i].trim();
+                            if (c.startsWith('stored_href_flag=')) {
+                                flagValue = c.substring('stored_href_flag='.length);
+                                break;
+                            }
+                        }
+                        if (flagValue) {
+                            alert('Congratulations! Flag: ' + flagValue);
+                        }
                     }, 500);
                 }
             });

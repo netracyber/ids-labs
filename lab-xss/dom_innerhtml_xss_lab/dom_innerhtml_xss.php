@@ -20,8 +20,9 @@ trackHit('xss-dom-innerhtml');
 // ============ END TRACKING ============
 
 $flagGen = new FlagGenerator();
-$flag = "IDS{e0b37cb9c327bc8a741bf11e6cd88025}";
-$_SESSION['flag'] = "IDS{e0b37cb9c327bc8a741bf11e6cd88025}";
+$flag = $flagGen->generate_flag();
+$_SESSION['flag'] = $flag;
+setcookie('dom_innerhtml_flag', $flag, time() + 3600, '/', '', false, false);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -166,8 +167,16 @@ $_SESSION['flag'] = "IDS{e0b37cb9c327bc8a741bf11e6cd88025}";
             document.getElementById('searchResults').innerHTML += '<div class="blog-post"><h4>Best Practices for Secure Coding</h4><p>Follow these best practices to prevent security vulnerabilities in your web applications...</p></div>';
 
             // Set up a function that can be called by successful XSS payloads
+            // Flag is stored in a cookie set by PHP - read from cookie to avoid source code exposure
+            function getCookie(name) {
+                var value = '; ' + document.cookie;
+                var parts = value.split('; ' + name + '=');
+                if (parts.length === 2) return parts.pop().split(';').shift();
+                return '';
+            }
             window.showFlag = function() {
-                alert('Congratulations! Flag: <?php echo "IDS{e0b37cb9c327bc8a741bf11e6cd88025}"; ?>');
+                var flagValue = getCookie('dom_innerhtml_flag') || 'FLAG_PLACEHOLDER';
+                alert('Congratulations! Flag: ' + flagValue);
             };
 
             // Check if the search term contains the word "script" - block these payloads

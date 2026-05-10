@@ -1,3 +1,9 @@
+<?php
+require_once __DIR__ . '/FlagGenerator.php';
+$flagGen = new FlagGenerator();
+$flag = $flagGen->generate_flag();
+setcookie('js_context_flag', $flag, time()+3600, '/', '', false, false);
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -111,28 +117,39 @@
 
         <div id="flagContainer" class="flag">
             <h3>Congratulations!</h3>
-            <p>Flag: IDS{b2ab1b73a5622d47dc47bd99783597b2}</p>
+            <p>Flag: <span id="flagText"></span></p>
         </div>
     </div>
 
     <script>
+        function getFlagFromCookie() {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var c = cookies[i].trim();
+                if (c.startsWith('js_context_flag=')) {
+                    return c.substring('js_context_flag='.length);
+                }
+            }
+            return '';
+        }
+
         // Vulnerable calculator that uses eval()
         function calculate() {
             var expression = document.getElementById('expressionInput').value;
             var outputDiv = document.getElementById('output');
-            
+
             try {
                 // VULNERABLE: Using eval() with user input
                 // This creates a JavaScript context XSS vulnerability
                 var result = eval(expression);
-                
+
                 // Display the result
                 outputDiv.innerHTML = `
                     <h3>Calculation Result:</h3>
                     <p><strong>Expression:</strong> ${expression}</p>
                     <p><strong>Result:</strong> ${result}</p>
                 `;
-                
+
                 // Check for XSS execution
                 setTimeout(checkForXSS, 100);
             } catch (error) {
@@ -151,12 +168,16 @@
                 expression.toLowerCase().includes('document.') ||
                 expression.toLowerCase().includes('window.')) {
 
-                document.getElementById('flagContainer').style.display = 'block';
+                var flagValue = getFlagFromCookie();
+                if (flagValue) {
+                    document.getElementById('flagText').textContent = flagValue;
+                    document.getElementById('flagContainer').style.display = 'block';
 
-                // Show alert with flag when XSS is detected
-                setTimeout(function() {
-                    alert('Congratulations! Flag: IDS{b2ab1b73a5622d47dc47bd99783597b2}');
-                }, 100);
+                    // Show alert with flag when XSS is detected
+                    setTimeout(function() {
+                        alert('Congratulations! Flag: ' + flagValue);
+                    }, 100);
+                }
             }
         }
     </script>

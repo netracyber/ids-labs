@@ -26,6 +26,17 @@ $note = isset($_GET['note']) ? $_GET['note'] : '';
 
 // Generate and store flag in session
 session_start();
+
+// Detect XSS patterns in note
+if (!empty($note)) {
+    $xss_patterns = ['/<script/i', '/on\w+\s*=/i', '/javascript:/i', '/<img\b/i', '/<svg\b/i', '/<iframe\b/i', '/<body\b/i', '/<input\b/i', '/alert\s*\(/i', '/document\.cookie/i', '/onerror/i', '/onload/i', '/onclick/i', '/onmouseover/i'];
+    foreach ($xss_patterns as $pattern) {
+        if (preg_match($pattern, $note)) {
+            $_SESSION['xss_solved'] = true;
+            break;
+        }
+    }
+}
 if (!isset($_SESSION['flag'])) {
     $flag_generator = new FlagGenerator();
     $_SESSION['flag'] = $flag_generator->generate_flag();

@@ -23,12 +23,14 @@ trackHit('xss-dom');
 if (!isset($_COOKIE['dom_xss_flag'])) {
     $flag = 'IDS{dom_xss_' . bin2hex(random_bytes(8)) . '}';
     setcookie('dom_xss_flag', $flag, time() + 3600, '/', '', false, false);
+} else {
+    $flag = $_COOKIE['dom_xss_flag'];
 }
 
 // Read the HTML file
 $html_content = file_get_contents(__DIR__ . '/dom_xss.html');
 
-// Inject the flag into the page (for validation)
-$html_content = str_replace('</head>', '<script>const domXssFlag = "' . ($_COOKIE['dom_xss_flag'] ?? 'IDS{flag_not_set}') . '";</script></head>', $html_content);
+// Inject the flag into the page for client-side validation (read from cookie)
+$html_content = str_replace('</head>', '<script>const domXssFlag = document.cookie.split("; ").find(r=>r.startsWith("dom_xss_flag="))?.split("=")[1] || "";</script></head>', $html_content);
 
 echo $html_content;

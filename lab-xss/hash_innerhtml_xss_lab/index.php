@@ -1,4 +1,11 @@
 <?php
+session_start();
+// Handle XSS success notification from client-side JavaScript
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['xss_success'])) {
+    $_SESSION['xss_solved'] = true;
+    echo json_encode(['status' => 'ok']);
+    exit;
+}
 // ============ TRACKING ============
 function trackHit($labId) {
     @file_get_contents("http://tracking-service:8080/api/hit?" . http_build_query([
@@ -349,15 +356,20 @@ trackHit('xss-hash-innerhtml');
                 window.alert = function(message) {
                     // Check if message contains our trigger
                     if (message && typeof message === 'string' && message.includes('XSS_SUCCESS')) {
-                        // Fetch flag from server-side endpoint
-                        fetch('get_flag.php')
-                            .then(response => response.text())
-                            .then(flag => {
-                                originalAlert('🎯 FLAG: ' + flag.trim());
-                            })
-                            .catch(err => {
-                                originalAlert('Error fetching flag. Please try again.');
-                            });
+                        // Notify server that XSS was solved, then fetch flag
+                        fetch('index.php', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                            body: 'xss_success=1'
+                        })
+                        .then(() => fetch('get_flag.php'))
+                        .then(response => response.text())
+                        .then(flag => {
+                            originalAlert('🎯 FLAG: ' + flag.trim());
+                        })
+                        .catch(err => {
+                            originalAlert('Error fetching flag. Please try again.');
+                        });
                         return true;
                     }
                     return originalAlert(message);

@@ -141,8 +141,16 @@
             document.getElementById('searchResults').innerHTML += '<div class="blog-post"><h4>Best Practices for Secure Coding</h4><p>Follow these best practices to prevent security vulnerabilities in your web applications...</p></div>';
             
             // Set up a function that can be called by successful XSS payloads
+            // Flag is stored in a cookie set by dom_innerhtml_xss.php - read from cookie to avoid source code exposure
+            function getCookieVal(name) {
+                var value = '; ' + document.cookie;
+                var parts = value.split('; ' + name + '=');
+                if (parts.length === 2) return parts.pop().split(';').shift();
+                return '';
+            }
             window.showFlag = function() {
-                alert('Congratulations! Flag: IDS{e0b37cb9c327bc8a741bf11e6cd88025}');
+                var flagValue = getCookieVal('dom_innerhtml_flag') || 'FLAG_PLACEHOLDER';
+                alert('Congratulations! Flag: ' + flagValue);
             };
 
             // Check if the search term contains the word "script" - block these payloads

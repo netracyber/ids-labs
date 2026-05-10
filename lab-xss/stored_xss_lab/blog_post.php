@@ -3,8 +3,13 @@ session_start();
 require_once __DIR__ . '/FlagGenerator.php';
 
 $flagGen = new FlagGenerator();
-$flag = "IDS{1c8a5c15517d898e873a11dd32a19fa4}";
-$_SESSION['flag'] = "IDS{1c8a5c15517d898e873a11dd32a19fa4}";
+$flag = $flagGen->generate_flag();
+$_SESSION['flag'] = $flag;
+
+// Set the flag cookie (non-httpOnly so it can be stolen via XSS)
+if (!isset($_COOKIE['xss_flag'])) {
+    setcookie('xss_flag', $flag, time() + 3600, '/', '', false, false);
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -195,12 +200,9 @@ $_SESSION['flag'] = "IDS{1c8a5c15517d898e873a11dd32a19fa4}";
 
             <?php if ($xssDetectedFromSubmission): ?>
             <div class="xss-success">
-                <p>Congratulations! You've successfully executed a stored XSS attack!</p>
-                <p>Flag: <strong><?php echo "IDS{1c8a5c15517d898e873a11dd32a19fa4}"; ?></strong></p>
+                <p>You triggered XSS! Now try to steal the cookie.</p>
+                <p>The flag is stored in a cookie named <code>xss_flag</code>. Use your XSS payload to exfiltrate it.</p>
             </div>
-            <script>
-                alert("Success! Stored XSS payload detected.\\nFlag: <?php echo "IDS{1c8a5c15517d898e873a11dd32a19fa4}"; ?>");
-            </script>
             <?php endif; ?>
 
             <div class="comment-form">

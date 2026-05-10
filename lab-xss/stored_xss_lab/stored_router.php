@@ -18,6 +18,15 @@ function trackFlag($labId, $flag) {
 trackHit('xss-stored');
 // ============ END TRACKING ============
 
+// Set the flag cookie before any output
+require_once __DIR__ . '/FlagGenerator.php';
+session_start();
+if (!isset($_COOKIE['xss_flag'])) {
+    $flagGen = new FlagGenerator();
+    $flag = $flagGen->generate_flag();
+    setcookie('xss_flag', $flag, time() + 3600, '/', '', false, false);
+}
+
 // Redirect root path to blog_post.php
 if ($_SERVER['REQUEST_URI'] === '/' || $_SERVER['REQUEST_URI'] === '/index.html' || $_SERVER['REQUEST_URI'] === '/index.php') {
     // Include the blog_post.php file to execute its PHP code

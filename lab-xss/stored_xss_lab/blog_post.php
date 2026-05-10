@@ -5,11 +5,6 @@ require_once __DIR__ . '/FlagGenerator.php';
 $flagGen = new FlagGenerator();
 $flag = $flagGen->generate_flag();
 $_SESSION['flag'] = $flag;
-
-// Set the flag cookie (non-httpOnly so it can be stolen via XSS)
-if (!isset($_COOKIE['xss_flag'])) {
-    setcookie('xss_flag', $flag, time() + 3600, '/', '', false, false);
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">

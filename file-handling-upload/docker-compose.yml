@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  upload-bypass:
+    build: .
+    container_name: upload-bypass-lab
+    ports: ["8065:80"]
+    volumes: [./logs:/var/log/apache2]
+    restart: unless-stopped
+    networks: [upload-bypass-network, tracking-network]
+networks:
+  upload-bypass-network: { driver: bridge }
+  tracking-network: { external: true }

@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  lfi-cookie:
+    build: .
+    container_name: lfi-cookie-lab
+    ports: ["8044:80"]
+    volumes: [./logs:/var/log/apache2]
+    restart: unless-stopped
+    networks: [lfi-cookie-network, tracking-network]
+networks:
+  lfi-cookie-network: { driver: bridge }
+  tracking-network: { external: true }

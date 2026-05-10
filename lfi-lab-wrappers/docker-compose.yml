@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  lfi-wrappers:
+    build: .
+    container_name: lfi-wrappers-lab
+    ports: ["8046:80"]
+    volumes: [./logs:/var/log/apache2]
+    restart: unless-stopped
+    networks: [lfi-wrappers-network, tracking-network]
+networks:
+  lfi-wrappers-network: { driver: bridge }
+  tracking-network: { external: true }

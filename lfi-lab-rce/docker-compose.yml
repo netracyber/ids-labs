@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  lfi-rce:
+    build: .
+    container_name: lfi-rce-lab
+    ports: ["8047:80"]
+    volumes: [./logs:/var/log/apache2]
+    restart: unless-stopped
+    networks: [lfi-rce-network, tracking-network]
+networks:
+  lfi-rce-network: { driver: bridge }
+  tracking-network: { external: true }

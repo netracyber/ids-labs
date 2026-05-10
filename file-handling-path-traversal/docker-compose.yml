@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  path-traversal:
+    build: .
+    container_name: path-traversal-lab
+    ports: ["8064:80"]
+    volumes: [./logs:/var/log/apache2]
+    restart: unless-stopped
+    networks: [path-traversal-network, tracking-network]
+networks:
+  path-traversal-network: { driver: bridge }
+  tracking-network: { external: true }

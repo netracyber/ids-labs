@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  lfi-nullbyte:
+    build: .
+    container_name: lfi-nullbyte-lab
+    ports: ["8045:80"]
+    volumes: [./logs:/var/log/apache2]
+    restart: unless-stopped
+    networks: [lfi-nullbyte-network, tracking-network]
+networks:
+  lfi-nullbyte-network: { driver: bridge }
+  tracking-network: { external: true }

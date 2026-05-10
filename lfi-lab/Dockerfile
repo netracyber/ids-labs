@@ -31,4 +31,7 @@ RUN echo "This is a test file for level 1 practice." > /var/www/html/lfi-lab/lev
 
 EXPOSE 80
 
+RUN echo '<?php header("Location: /lfi-lab/"); ?>' > /var/www/html/index.php && \
+    chown www-data:www-data /var/www/html/index.php
+
 CMD ["apache2-foreground"]

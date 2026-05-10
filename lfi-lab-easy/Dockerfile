@@ -19,4 +19,7 @@ RUN chown -R www-data:www-data /var/www/html/lfi-easy && \
 
 EXPOSE 80
 
+RUN echo '<?php header("Location: /lfi-easy/"); ?>' > /var/www/html/index.php && \
+    chown www-data:www-data /var/www/html/index.php
+
 CMD ["apache2-foreground"]

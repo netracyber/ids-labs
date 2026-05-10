@@ -21,7 +21,7 @@ trackHit('xss-dom');
 
 // Set the flag cookie if not already set
 if (!isset($_COOKIE['dom_xss_flag'])) {
-    $flag = 'IDS{dom_xss_' . bin2hex(random_bytes(8)) . '}';
+    $flag = 'IDS{' . bin2hex(random_bytes(16)) . '}';
     setcookie('dom_xss_flag', $flag, time() + 3600, '/', '', false, false);
 } else {
     $flag = $_COOKIE['dom_xss_flag'];

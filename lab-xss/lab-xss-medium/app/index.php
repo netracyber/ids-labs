@@ -27,9 +27,9 @@ $flag_script = '/usr/local/bin/generate_flag.py';
 
 if (!file_exists($flag_file)) {
     // Generate flag using Python script
-    $flag = shell_exec("python3 $flag_script 2>/dev/null | grep -oP 'IDS\\{[^}]+\\}' || echo 'IDS{fallback_flag_for_demo}'");
+    $flag = shell_exec("python3 $flag_script 2>/dev/null | grep -oP 'IDS\\{[^}]+\\}' || echo 'IDS{a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6}'");
     if (empty($flag)) {
-        $flag = 'IDS{flag_generation_failed}';
+        $flag = 'IDS{b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7}';
     }
     file_put_contents($flag_file, trim($flag));
 } else {

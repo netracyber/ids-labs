@@ -20,7 +20,7 @@ trackHit('xss-reflected');
 
 // Set the flag cookie if not already set
 if (!isset($_COOKIE['xss_flag'])) {
-    $flag = 'IDS{reflected_xss_' . bin2hex(random_bytes(8)) . '}';
+    $flag = 'IDS{' . bin2hex(random_bytes(16)) . '}';
     setcookie('xss_flag', $flag, time() + 3600, '/', '', false, false);
 }
 

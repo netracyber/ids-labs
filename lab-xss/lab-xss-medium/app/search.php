@@ -7,7 +7,7 @@
 session_start();
 
 // Get flag from session
-$flag = isset($_SESSION['xss_flag']) ? $_SESSION['xss_flag'] : 'IDS{session_error}';
+$flag = isset($_SESSION['xss_flag']) ? $_SESSION['xss_flag'] : 'IDS{6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f}';
 
 // Get search query from multiple possible parameters
 $query = '';

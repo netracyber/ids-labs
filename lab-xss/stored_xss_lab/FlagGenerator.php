@@ -29,7 +29,7 @@ class FlagGenerator {
     private function run_python_generator() {
         $output = shell_exec("python3 {$this->pythonScript} 2>&1");
 
-        if (preg_match('/IDS\{[A-Za-z0-9]+\}/', $output, $matches)) {
+        if (preg_match('/IDS\{[a-f0-9]{32}\}/', $output, $matches)) {
             return $matches[0];
         }
 
@@ -37,9 +37,9 @@ class FlagGenerator {
     }
 
     private function generate_fallback_flag() {
-        $characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        $characters = '0123456789abcdef';
         $random_code = '';
-        for ($i = 0; $i < 20; $i++) {
+        for ($i = 0; $i < 32; $i++) {
             $random_code .= $characters[random_int(0, strlen($characters) - 1)];
         }
         return 'IDS{' . $random_code . '}';

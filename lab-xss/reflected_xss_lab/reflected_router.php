@@ -18,6 +18,12 @@ function trackFlag($labId, $flag) {
 trackHit('xss-reflected');
 // ============ END TRACKING ============
 
+// Set the flag cookie if not already set
+if (!isset($_COOKIE['xss_flag'])) {
+    $flag = 'IDS{reflected_xss_' . bin2hex(random_bytes(8)) . '}';
+    setcookie('xss_flag', $flag, time() + 3600, '/', '', false, false);
+}
+
 $request_uri = $_SERVER['REQUEST_URI'];
 $path = parse_url($request_uri, PHP_URL_PATH);
 

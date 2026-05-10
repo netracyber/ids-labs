@@ -106,9 +106,27 @@ $_SESSION['flag'] = "IDS{1c8a5c15517d898e873a11dd32a19fa4}";
             // Read existing comments from file
             $commentsFile = 'comments.txt';
             $comments = [];
+            $maxAge = 120; // Auto-delete comments older than 2 minutes
 
             if (file_exists($commentsFile)) {
-                $comments = unserialize(file_get_contents($commentsFile));
+                $raw = @unserialize(file_get_contents($commentsFile));
+                if (is_array($raw)) {
+                    // Clean up old comments (older than 2 minutes)
+                    $now = time();
+                    foreach ($raw as $key => $entry) {
+                        // Handle both old format (plain string) and new format (array with timestamp)
+                        if (is_array($entry) && isset($entry['time'])) {
+                            if (($now - $entry['time']) > $maxAge) {
+                                unset($raw[$key]);
+                            }
+                        } elseif (is_string($entry)) {
+                            // Old format - add timestamp as now (give grace period)
+                            $raw[$key] = ['text' => $entry, 'time' => $now];
+                        }
+                    }
+                    $comments = array_values($raw);
+                    file_put_contents($commentsFile, serialize($comments));
+                }
             }
 
             // Check for XSS only in the newly submitted comment (for flag detection)
@@ -131,15 +149,16 @@ $_SESSION['flag'] = "IDS{1c8a5c15517d898e873a11dd32a19fa4}";
                 echo '<p>No comments yet. Be the first to comment!</p>';
             } else {
                 // Display existing comments
-                foreach ($comments as $comment) {
-                    echo '<div class="comment">' . $comment . '</div>';
+                foreach ($comments as $entry) {
+                    $text = is_array($entry) ? ($entry['text'] ?? '') : $entry;
+                    echo '<div class="comment">' . $text . '</div>';
                 }
             }
 
             // Handle new comment submission
             if ($_POST && isset($_POST['comment'])) {
                 $newComment = $_POST['comment'];
-                $comments[] = $newComment;
+                $comments[] = ['text' => $newComment, 'time' => time()];
 
                 // Check if the new comment contains XSS patterns (for flag detection)
                 foreach ($xssPatterns as $pattern) {
@@ -163,6 +182,13 @@ $_SESSION['flag'] = "IDS{1c8a5c15517d898e873a11dd32a19fa4}";
                 }
             }
 
+            // Handle clear all comments
+            if ($_POST && isset($_POST['clear_all'])) {
+                file_put_contents($commentsFile, serialize([]));
+                header('Location: ' . $_SERVER['PHP_SELF']);
+                exit;
+            }
+
             // Check if we just submitted an XSS payload (indicated by the query parameter)
             $xssDetectedFromSubmission = isset($_GET['xss_success']) && $_GET['xss_success'] == '1';
             ?>
@@ -183,6 +209,11 @@ $_SESSION['flag'] = "IDS{1c8a5c15517d898e873a11dd32a19fa4}";
                     <textarea name="comment" placeholder="Enter your comment here..."></textarea>
                     <button type="submit">Submit Comment</button>
                 </form>
+                <form method="POST" style="margin-top: 10px; display: inline;">
+                    <input type="hidden" name="clear_all" value="1">
+                    <button type="submit" style="background-color: #dc3545; font-size: 12px; padding: 6px 12px;">Clear All Comments</button>
+                </form>
+                <p style="font-size: 11px; color: #999; margin-top: 8px;">Comments are automatically deleted after 2 minutes.</p>
             </div>
         </div>
 

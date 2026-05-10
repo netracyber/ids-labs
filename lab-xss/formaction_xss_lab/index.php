@@ -15,6 +15,11 @@ function trackFlag($labId, $flag) {
 }
 trackHit('xss-formaction');
 // ============ END TRACKING ============
+
+// Set the flag cookie before any output
+if (!isset($_COOKIE['xss_flag'])) {
+    setcookie('xss_flag', 'IDS{1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d}', time() + 3600, '/', '', false, false);
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -246,11 +251,6 @@ trackHit('xss-formaction');
             require_once __DIR__ . '/FlagGenerator.php';
             $flagGen = new FlagGenerator();
             $flag = "IDS{1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d}";
-
-            // Set the flag cookie if not already set
-            if (!isset($_COOKIE['xss_flag'])) {
-                setcookie('xss_flag', 'IDS{1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d}', time() + 3600, '/', '', false, true);
-            }
 
             // Process search if submitted
             if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['search'])) {

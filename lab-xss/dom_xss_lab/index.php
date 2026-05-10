@@ -22,7 +22,7 @@ trackHit('xss-dom');
 // Set the flag cookie if not already set
 if (!isset($_COOKIE['dom_xss_flag'])) {
     $flag = 'IDS{dom_xss_' . bin2hex(random_bytes(8)) . '}';
-    setcookie('dom_xss_flag', $flag, time() + 3600, '/', '', false, true);
+    setcookie('dom_xss_flag', $flag, time() + 3600, '/', '', false, false);
 }
 
 // Read the HTML file

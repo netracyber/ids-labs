@@ -1,9 +1,66 @@
 <?php
-require_once __DIR__ . '/FlagGenerator.php';
+// POST processing MUST happen before any HTML output
+$commentsFile = __DIR__ . '/comments.txt';
+$comments = [];
+$maxAge = 120;
 
-$flagGen = new FlagGenerator();
-$flag = $flagGen->generate_flag();
-$_SESSION['flag'] = $flag;
+// Load existing comments
+if (file_exists($commentsFile)) {
+    $raw = @unserialize(file_get_contents($commentsFile));
+    if (is_array($raw)) {
+        $now = time();
+        foreach ($raw as $key => $entry) {
+            if (is_array($entry) && isset($entry['time'])) {
+                if (($now - $entry['time']) > $maxAge) {
+                    unset($raw[$key]);
+                }
+            } elseif (is_string($entry)) {
+                $raw[$key] = ['text' => $entry, 'time' => $now];
+            }
+        }
+        $comments = array_values($raw);
+        file_put_contents($commentsFile, serialize($comments));
+    }
+}
+
+// XSS detection patterns
+$xssPatterns = [
+    '/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/mi',
+    '/on\w+\s*=/i',
+    '/<img[^>]*onerror\s*=/i',
+    '/<svg[^>]*onload\s*=/i',
+    '/javascript:/i',
+    '/<iframe/i',
+    '/<object/i',
+    '/<embed/i',
+    '/<div[^>]*onclick\s*=/i',
+    '/<a[^>]*onmouseover\s*=/i'
+];
+
+// Handle clear all comments (before any output)
+if ($_POST && isset($_POST['clear_all'])) {
+    file_put_contents($commentsFile, serialize([]));
+    $comments = [];
+    // Don't redirect - just continue rendering
+}
+
+// Handle new comment submission (before any output)
+$xssDetectedFromSubmission = false;
+
+if ($_POST && isset($_POST['comment'])) {
+    $newComment = $_POST['comment'];
+    $comments[] = ['text' => $newComment, 'time' => time()];
+
+    foreach ($xssPatterns as $pattern) {
+        if (preg_match($pattern, $newComment)) {
+            $xssDetectedFromSubmission = true;
+            break;
+        }
+    }
+
+    file_put_contents($commentsFile, serialize($comments));
+    // Don't redirect - just continue rendering with the flag set
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -102,94 +159,15 @@ $_SESSION['flag'] = $flag;
         <div class="comments-section">
             <h3>Comments</h3>
             <?php
-            // Read existing comments from file
-            $commentsFile = 'comments.txt';
-            $comments = [];
-            $maxAge = 120; // Auto-delete comments older than 2 minutes
-
-            if (file_exists($commentsFile)) {
-                $raw = @unserialize(file_get_contents($commentsFile));
-                if (is_array($raw)) {
-                    // Clean up old comments (older than 2 minutes)
-                    $now = time();
-                    foreach ($raw as $key => $entry) {
-                        // Handle both old format (plain string) and new format (array with timestamp)
-                        if (is_array($entry) && isset($entry['time'])) {
-                            if (($now - $entry['time']) > $maxAge) {
-                                unset($raw[$key]);
-                            }
-                        } elseif (is_string($entry)) {
-                            // Old format - add timestamp as now (give grace period)
-                            $raw[$key] = ['text' => $entry, 'time' => $now];
-                        }
-                    }
-                    $comments = array_values($raw);
-                    file_put_contents($commentsFile, serialize($comments));
-                }
-            }
-
-            // Check for XSS only in the newly submitted comment (for flag detection)
-            $newXssDetected = false;
-            $xssPatterns = [
-                '/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/mi',
-                '/on\w+\s*=/i',
-                '/<img[^>]*onerror\s*=/i',
-                '/<svg[^>]*onload\s*=/i',
-                '/javascript:/i',
-                '/<iframe/i',
-                '/<object/i',
-                '/<embed/i',
-                '/<div[^>]*onclick\s*=/i',
-                '/<a[^>]*onmouseover\s*=/i'
-            ];
-
             // Display existing comments or show "No comments yet" if empty
             if (empty($comments)) {
                 echo '<p>No comments yet. Be the first to comment!</p>';
             } else {
-                // Display existing comments
                 foreach ($comments as $entry) {
                     $text = is_array($entry) ? ($entry['text'] ?? '') : $entry;
                     echo '<div class="comment">' . $text . '</div>';
                 }
             }
-
-            // Handle new comment submission
-            if ($_POST && isset($_POST['comment'])) {
-                $newComment = $_POST['comment'];
-                $comments[] = ['text' => $newComment, 'time' => time()];
-
-                // Check if the new comment contains XSS patterns (for flag detection)
-                foreach ($xssPatterns as $pattern) {
-                    if (preg_match($pattern, $newComment)) {
-                        $newXssDetected = true;
-                        break;
-                    }
-                }
-
-                // Save comments to file
-                file_put_contents($commentsFile, serialize($comments));
-
-                // Redirect to prevent duplicate submissions
-                // Only show the alert if XSS was detected in the new comment
-                if ($newXssDetected) {
-                    header('Location: ' . $_SERVER['PHP_SELF'] . '?xss_success=1');
-                    exit;
-                } else {
-                    header('Location: ' . $_SERVER['PHP_SELF']);
-                    exit;
-                }
-            }
-
-            // Handle clear all comments
-            if ($_POST && isset($_POST['clear_all'])) {
-                file_put_contents($commentsFile, serialize([]));
-                header('Location: ' . $_SERVER['PHP_SELF']);
-                exit;
-            }
-
-            // Check if we just submitted an XSS payload (indicated by the query parameter)
-            $xssDetectedFromSubmission = isset($_GET['xss_success']) && $_GET['xss_success'] == '1';
             ?>
 
             <?php if ($xssDetectedFromSubmission): ?>

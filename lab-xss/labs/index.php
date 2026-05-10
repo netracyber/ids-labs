@@ -2,14 +2,14 @@
 require_once __DIR__ . '/FlagGenerator.php';
 $flagGen = new FlagGenerator();
 $flag = $flagGen->generate_flag();
-setcookie('json_xss_flag', $flag, time()+3600, '/', '', false, false);
+setcookie('js_context_flag', $flag, time()+3600, '/', '', false, false);
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JSON-based XSS Lab - API Response</title>
+    <title>JavaScript Context XSS Lab - Eval Injection</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -48,8 +48,12 @@ setcookie('json_xss_flag', $flag, time()+3600, '/', '', false, false);
             padding: 15px;
             background-color: #f9f9f9;
             border-left: 4px solid #007cba;
-            font-family: monospace;
-            white-space: pre-wrap;
+        }
+        .instructions {
+            background-color: #fff3cd;
+            padding: 10px;
+            border-left: 4px solid #ffc107;
+            margin: 10px 0;
         }
         .flag {
             margin-top: 20px;
@@ -64,41 +68,51 @@ setcookie('json_xss_flag', $flag, time()+3600, '/', '', false, false);
 <body>
     <div class="container">
         <header>
-            <h1>SecureAPI - User Directory</h1>
+            <h1>MathCalc Pro - Advanced Calculator</h1>
             <nav>
                 <a href="#">Home</a> |
-                <a href="#">Users</a> |
-                <a href="#">API Docs</a> |
-                <a href="#">Contact</a>
+                <a href="#">Scientific</a> |
+                <a href="#">Financial</a> |
+                <a href="#">Graphing</a> |
+                <a href="#">History</a>
             </nav>
         </header>
 
         <section>
-            <h2>Search for User Profiles</h2>
-            <p>Enter a username to get user details from our API:</p>
+            <h2>Advanced Expression Calculator</h2>
+            <p>Enter a mathematical expression to calculate:</p>
+
+            <div class="instructions">
+                <strong>Note:</strong> This calculator uses eval() to process expressions. Be careful!
+            </div>
 
             <div class="input-box">
-                <input type="text" id="usernameInput" placeholder="Enter username...">
-                <button onclick="fetchUserDetails()">Get User Details</button>
+                <input type="text" id="expressionInput" placeholder="Enter expression (e.g., 2+2)...">
+                <button onclick="calculate()">Calculate</button>
             </div>
 
             <div id="output" class="output">
-                <p>Enter a username to fetch user details.</p>
+                <p>Enter an expression to calculate.</p>
             </div>
         </section>
 
         <section>
-            <h3>Popular Users</h3>
+            <h3>Recent Calculations</h3>
             <ul>
-                <li>john_doe - Software Engineer</li>
-                <li>jane_smith - Product Manager</li>
-                <li>mike_wilson - UX Designer</li>
-                <li>sarah_johnson - Data Scientist</li>
+                <li>2 + 2 = 4</li>
+                <li>10 * 5 = 50</li>
+                <li>sqrt(16) = 4</li>
+                <li>3.14 * 2 = 6.28</li>
             </ul>
         </section>
 
+        <section>
+            <h3>Supported Functions</h3>
+            <p>+, -, *, /, Math.pow(), Math.sqrt(), Math.sin(), Math.cos(), Math.tan()</p>
+        </section>
+
         <footer>
-            <p>&copy; 2026 SecureAPI. All rights reserved.</p>
+            <p>&copy; 2026 MathCalc Pro. All rights reserved.</p>
         </footer>
 
         <div id="flagContainer" class="flag">
@@ -112,56 +126,47 @@ setcookie('json_xss_flag', $flag, time()+3600, '/', '', false, false);
             var cookies = document.cookie.split(';');
             for (var i = 0; i < cookies.length; i++) {
                 var c = cookies[i].trim();
-                if (c.startsWith('json_xss_flag=')) {
-                    return c.substring('json_xss_flag='.length);
+                if (c.startsWith('js_context_flag=')) {
+                    return c.substring('js_context_flag='.length);
                 }
             }
             return '';
         }
 
-        // Simulate API response with potential XSS vulnerability
-        function fetchUserDetails() {
-            var username = document.getElementById('usernameInput').value;
+        // Vulnerable calculator that uses eval()
+        function calculate() {
+            var expression = document.getElementById('expressionInput').value;
             var outputDiv = document.getElementById('output');
 
-            // Simulate API response
-            var mockApiResponse = {
-                username: username,
-                email: username + "@example.com",
-                bio: "User bio for " + username,
-                profilePic: "/images/" + username + ".jpg"
-            };
+            try {
+                // VULNERABLE: Using eval() with user input
+                // This creates a JavaScript context XSS vulnerability
+                var result = eval(expression);
 
-            // VULNERABLE: Converting JSON to string and inserting into HTML
-            // This could be vulnerable if the JSON contains HTML/JS
-            var responseString = JSON.stringify(mockApiResponse, null, 2);
+                // Display the result
+                outputDiv.innerHTML = `
+                    <h3>Calculation Result:</h3>
+                    <p><strong>Expression:</strong> ${expression}</p>
+                    <p><strong>Result:</strong> ${result}</p>
+                `;
 
-            // Also simulate a scenario where the response is used in HTML context
-            var htmlOutput = `
-                <h3>User Details:</h3>
-                <p><strong>Username:</strong> ${mockApiResponse.username}</p>
-                <p><strong>Email:</strong> ${mockApiResponse.email}</p>
-                <p><strong>Bio:</strong> ${mockApiResponse.bio}</p>
-                <img src="${mockApiResponse.profilePic}" alt="Profile Picture">
-            `;
-
-            // VULNERABLE: Directly inserting user data into HTML
-            outputDiv.innerHTML = htmlOutput;
-
-            // Check for XSS execution
-            setTimeout(checkForXSS, 100);
+                // Check for XSS execution
+                setTimeout(checkForXSS, 100);
+            } catch (error) {
+                outputDiv.innerHTML = `<p>Error: ${error.message}</p>`;
+            }
         }
 
-        // Check if XSS payload was executed
+        // Check if XSS payload was executed via eval
         function checkForXSS() {
-            var username = document.getElementById('usernameInput').value;
+            var expression = document.getElementById('expressionInput').value;
 
-            if (username.toLowerCase().includes('<script>') ||
-                username.toLowerCase().includes('javascript:') ||
-                username.toLowerCase().includes('alert(') ||
-                username.toLowerCase().includes('onerror') ||
-                username.toLowerCase().includes('onload') ||
-                username.toLowerCase().includes('img src=')) {
+            // Check for common XSS patterns in the expression
+            if (expression.toLowerCase().includes('alert(') ||
+                expression.toLowerCase().includes('confirm(') ||
+                expression.toLowerCase().includes('prompt(') ||
+                expression.toLowerCase().includes('document.') ||
+                expression.toLowerCase().includes('window.')) {
 
                 var flagValue = getFlagFromCookie();
                 if (flagValue) {

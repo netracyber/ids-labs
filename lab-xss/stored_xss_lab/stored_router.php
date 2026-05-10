@@ -25,6 +25,9 @@ if (!isset($_COOKIE['xss_flag'])) {
     $flagGen = new FlagGenerator();
     $flag = $flagGen->generate_flag();
     setcookie('xss_flag', $flag, time() + 3600, '/', '', false, false);
+    $_SESSION['flag'] = $flag;
+} else {
+    $_SESSION['flag'] = $_COOKIE['xss_flag'];
 }
 
 // Redirect root path to blog_post.php

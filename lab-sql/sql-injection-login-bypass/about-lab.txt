@@ -1,0 +1,6 @@
+Name:
+SQL Injection Login Bypass
+Category:
+SQLi
+Message:
+Akses lab di http://localhost:5001. Gunakan payload SQL injection seperti ' OR '1'='1 di form login untuk mendapatkan flag.

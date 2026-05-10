@@ -1,0 +1,172 @@
+# PROMPT FINAL v1.0 – CREATE WEB CTF LAB
+
+LEVEL        : Medium
+TOPIC        : XSS
+TECHNIQUE    : Reflected XSS via event handler attribute
+FLAG_FORMAT  : IDS{********}
+CLUE_STYLE   : UI text misleading + parameter hint
+PORT_RULE    : Random available port (Docker mapping)
+
+---
+
+## 🎯 Tujuan Prompt
+
+Buat sebuah **lab keamanan web (CTF-style)** yang berfokus pada **1 kerentanan utama**, sesuai dengan tingkat kesulitan dan teknik yang telah ditentukan.
+
+Lab harus **edukatif, fair, dan mendorong eksplorasi**, bukan sekadar payload copy–paste.
+
+---
+
+## 🔐 Ketentuan Utama
+
+1. Lab **WAJIB dapat dijalankan menggunakan Docker**
+
+   * Gunakan `Dockerfile` atau `docker-compose`
+   * Aplikasi harus berjalan stabil setelah container dijalankan
+
+2. **Port aplikasi tidak boleh hardcoded**
+
+   * Gunakan Docker random port mapping (`-p 0:PORT` atau setara)
+
+3. Teknik eksploitasi **HARUS sesuai** dengan:
+
+   ```
+   {TECHNIQUE}
+   ```
+
+   dan **tidak boleh menambahkan kerentanan lain** (SQLi, LFI, SSTI, dll).
+
+4. Setiap lab **harus unik** dibanding lab lain, minimal pada:
+
+   * nama parameter vulnerable
+   * konteks injeksi (HTML body / attribute / JavaScript)
+   * atau mekanisme trigger eksploit
+
+---
+
+## 🏴 Flag System (WAJIB)
+
+1. Flag **TIDAK BOLEH**:
+
+   * di-hardcode di HTML, JavaScript, atau komentar
+   * bisa diakses melalui view-source
+
+2. Flag **WAJIB di-generate secara dinamis** menggunakan file:
+
+   ```
+   /home/labuser/tools/generate_flag.py
+   ```
+
+3. Result flag **HARUS mengikuti format**:
+
+   ```
+   IDS{********}
+   ```
+
+4. Flag **HANYA BOLEH muncul jika eksploit berhasil secara valid**, yaitu:
+
+   * payload JavaScript benar-benar tereksekusi di browser
+   * tanpa encoding atau filtering yang mencegah eksekusi
+
+5. Flag **ditampilkan melalui JavaScript `alert()`** setelah validasi eksploit berhasil.
+
+---
+
+## 🧠 Clue & Challenge Logic
+
+Website lab **HARUS menyediakan clue secara tidak langsung**, dengan karakteristik:
+
+* Clue muncul **secara acak** setiap refresh atau kondisi tertentu
+* Bentuk clue dapat berupa:
+
+  * komentar HTML tersembunyi
+  * variabel JavaScript
+  * pesan samar atau misleading di UI
+
+### Aturan Clue
+
+* Clue **TIDAK BOLEH eksplisit** menyebut payload atau solusi
+* Clue **HARUS memiliki logika tersembunyi** yang mengarah ke teknik eksploitasi
+* Clue dirancang agar user:
+
+  * bereksperimen
+  * memahami konteks injeksi
+  * tidak hanya menyalin payload
+
+---
+
+## ⚙️ Environment Rules (Easy)
+
+Untuk tingkat **Easy**, lab:
+
+* TIDAK menggunakan CSP
+* TIDAK menggunakan WAF
+* TIDAK menggunakan framework sanitasi modern
+
+Fokus lab adalah **pemahaman dasar Reflected XSS**, bukan bypass kompleks.
+
+---
+## ⚙️ Difficulty Rules (Dynamic)
+
+If LEVEL = Easy:
+- no CSP, no WAF
+- no input filtering
+- single-step exploit
+
+If LEVEL = Medium:
+- basic filtering or encoding present
+- exploit requires context awareness
+- may involve DOM-based XSS
+
+If LEVEL = Hard:
+- multi-step or chained execution
+- exploit relies on logic flaw
+- no direct reflection
+
+
+
+## 📁 Struktur Folder Lab (WAJIB)
+
+```
+lab-xss-easy/
+├── README.md
+├── Dockerfile / docker-compose.yml
+├── app/
+│   ├── source code aplikasi
+│   └── assets (jika ada)
+└── tools/
+    └── generate_flag.py
+```
+
+### README.md WAJIB berisi:
+
+1. Deskripsi singkat lab
+2. Tujuan pembelajaran
+3. Cara menjalankan lab (Docker)
+4. Hint umum (tanpa spoiler)
+
+---
+
+## 📤 Output yang Diharapkan
+
+1. Struktur folder lengkap
+2. Source code aplikasi
+3. Dockerfile atau docker-compose
+4. Instruksi menjalankan lab
+
+---
+
+## ✅ Kriteria Keberhasilan
+
+Prompt dianggap berhasil jika lab yang dihasilkan:
+
+* hanya dapat diselesaikan dengan teknik XSS yang ditentukan
+* tidak dapat disolve tanpa eksekusi JavaScript
+* tidak membocorkan flag tanpa eksploit valid
+
+---
+
+🔒 **Catatan Penting**
+Lab ini ditujukan untuk **pembelajaran dan simulasi legal** dalam lingkungan terkontrol.
+
+Author lab :IDS – CyberSec Academy Lab Authoring Guideline

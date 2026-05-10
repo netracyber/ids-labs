@@ -1,0 +1,380 @@
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+
+/* Header */
+header {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    color: white;
+    padding: 30px;
+    text-align: center;
+}
+
+header h1 {
+    font-size: 2.2em;
+    margin-bottom: 10px;
+}
+
+.tagline {
+    opacity: 0.9;
+    font-style: italic;
+}
+
+/* Navigation */
+nav {
+    background-color: #1a1a2e;
+    padding: 0 30px;
+    display: flex;
+    gap: 5px;
+}
+
+nav a {
+    color: #e0e0e0;
+    text-decoration: none;
+    padding: 15px 20px;
+    display: inline-block;
+    transition: all 0.3s ease;
+    border-bottom: 3px solid transparent;
+}
+
+nav a:hover {
+    background-color: #16213e;
+    color: #fff;
+}
+
+nav a.active {
+    background-color: #0f3460;
+    border-bottom-color: #e94560;
+    color: #fff;
+}
+
+/* Main Content */
+main {
+    padding: 30px;
+}
+
+/* Search Section */
+.search-section {
+    background-color: #f8f9fa;
+    padding: 25px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    border-left: 4px solid #667eea;
+}
+
+.search-form, .search-form-inline {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.search-form-inline {
+    flex-direction: row;
+    align-items: center;
+}
+
+.input-group {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.input-group label {
+    font-weight: 600;
+    color: #333;
+}
+
+input[type="text"] {
+    flex: 1;
+    min-width: 250px;
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+}
+
+input[type="text"]:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.btn-search {
+    padding: 12px 30px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-search:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.hint {
+    color: #666;
+    font-size: 0.9em;
+    margin-top: 5px;
+}
+
+.info-text {
+    color: #555;
+    margin-bottom: 15px;
+}
+
+/* Results Section */
+.results-section {
+    margin-bottom: 30px;
+}
+
+.results-section h2 {
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 1.8em;
+}
+
+#search-term {
+    color: #e94560;
+    font-weight: bold;
+}
+
+.no-results {
+    padding: 30px;
+    text-align: center;
+    background-color: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 6px;
+    color: #856404;
+}
+
+.results-count {
+    background-color: #e3f2fd;
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    border-left: 4px solid #2196f3;
+}
+
+.try-again {
+    color: #666;
+    margin-top: 5px;
+}
+
+/* Products Preview */
+.products-preview {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+.products-preview h3 {
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.product-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.product-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px;
+    background-color: white;
+    border-radius: 6px;
+    border: 1px solid #e0e0e0;
+}
+
+.product-name {
+    font-weight: 600;
+    color: #333;
+}
+
+.product-price {
+    color: #e94560;
+    font-weight: bold;
+}
+
+/* Features Section */
+.features {
+    margin-bottom: 30px;
+}
+
+.features h3 {
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.feature {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.feature h4 {
+    color: #333;
+    margin-bottom: 10px;
+    font-size: 1.2em;
+}
+
+.feature p {
+    color: #666;
+    line-height: 1.5;
+}
+
+/* Tips Section */
+.tips {
+    background-color: #e8f5e9;
+    padding: 20px;
+    border-radius: 8px;
+    border-left: 4px solid #4caf50;
+}
+
+.tips h3 {
+    color: #2e7d32;
+    margin-bottom: 15px;
+}
+
+.tips ul {
+    list-style-position: inside;
+    color: #555;
+}
+
+.tips li {
+    margin-bottom: 8px;
+    padding-left: 10px;
+}
+
+/* Advanced Options */
+.advanced-options {
+    background-color: #fff3e0;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 30px;
+    border-left: 4px solid #ff9800;
+}
+
+.advanced-options h3 {
+    color: #e65100;
+    margin-bottom: 15px;
+}
+
+.advanced-options .small {
+    font-size: 0.9em;
+    color: #666;
+}
+
+.advanced-options code {
+    background-color: #fff;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-family: 'Courier New', monospace;
+    color: #d32f2f;
+}
+
+.warning {
+    color: #e65100;
+    font-weight: 600;
+    margin-top: 10px;
+}
+
+/* Search Meta */
+.search-meta {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    text-align: center;
+    color: #999;
+    font-size: 0.9em;
+}
+
+/* Footer */
+footer {
+    background-color: #f5f5f5;
+    padding: 20px 30px;
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+}
+
+footer p {
+    color: #666;
+}
+
+.small-text {
+    font-size: 0.85em;
+    color: #999;
+    margin-top: 5px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container {
+        border-radius: 0;
+    }
+
+    header h1 {
+        font-size: 1.8em;
+    }
+
+    nav {
+        flex-direction: column;
+    }
+
+    nav a {
+        text-align: center;
+    }
+
+    .search-form-inline {
+        flex-direction: column;
+    }
+
+    .input-group {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    input[type="text"] {
+        width: 100%;
+    }
+
+    .feature-grid {
+        grid-template-columns: 1fr;
+    }
+}

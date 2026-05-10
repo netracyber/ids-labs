@@ -1,0 +1,7 @@
+# Docker Compose untuk Oracle Version SQL Injection Lab
+services:
+  oracle-version-lab:
+    build: .
+    ports:
+      - "5005:5005"
+    restart: unless-stopped

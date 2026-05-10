@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  broken-access-control-lab:
+    build: .
+    container_name: broken-access-control-lab
+    ports:
+      - "8063:80"
+    volumes:
+      - ./logs:/var/log/apache2
+    restart: unless-stopped
+    networks:
+      - lab-network
+      - tracking-network
+
+networks:
+  lab-network:
+    driver: bridge
+  tracking-network:
+    external: true

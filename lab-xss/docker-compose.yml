@@ -1,0 +1,241 @@
+services:
+  # Lab 1: Reflected XSS Lab
+  reflected-xss-lab:
+    build: .
+    container_name: xss-lab-reflected
+    ports:
+      - "8020:80"
+    volumes:
+      - ./reflected_xss_lab:/var/www/html
+      - ./reflected_xss_lab/tools/generate_flag.py:/usr/local/bin/generate_flag.py:ro
+    command: >
+      sh -c "php -S 0.0.0.0:80 -t /var/www/html /var/www/html/reflected_router.php"
+    networks:
+      - tracking-network
+    extra_hosts:
+      - "tracking-service:host-gateway"
+
+  # Lab 2: Stored XSS Lab
+  stored-xss-lab:
+    build: .
+    container_name: xss-lab-stored
+    ports:
+      - "8021:80"
+    volumes:
+      - ./stored_xss_lab:/var/www/html
+      - ./stored_xss_lab/tools/generate_flag.py:/usr/local/bin/generate_flag.py:ro
+    command: >
+      sh -c "php -S 0.0.0.0:80 -t /var/www/html /var/www/html/stored_router.php"
+    networks:
+      - tracking-network
+    extra_hosts:
+      - "tracking-service:host-gateway"
+
+  # Lab 3: DOM XSS Lab
+  dom-xss-lab:
+    build: .
+    container_name: xss-lab-dom
+    ports:
+      - "8022:80"
+    volumes:
+      - ./dom_xss_lab:/var/www/html
+      - ./dom_xss_lab/tools/generate_flag.py:/usr/local/bin/generate_flag.py:ro
+    command: >
+      sh -c "php -S 0.0.0.0:80 -t /var/www/html"
+    networks:
+      - tracking-network
+    extra_hosts:
+      - "tracking-service:host-gateway"
+
+  # Lab 4: DOM innerHTML XSS Lab
+  dom-innerhtml-xss-lab:
+    build: .
+    container_name: xss-lab-dom-innerhtml
+    ports:
+      - "8023:80"
+    volumes:
+      - ./dom_innerhtml_xss_lab:/var/www/html
+      - ./dom_innerhtml_xss_lab/tools/generate_flag.py:/usr/local/bin/generate_flag.py:ro
+    command: >
+      sh -c "php -S 0.0.0.0:80 -t /var/www/html"
+    networks:
+      - tracking-network
+    extra_hosts:
+      - "tracking-service:host-gateway"
+
+  # Lab 5: JS String XSS Lab
+  js-string-xss-lab:
+    build: .
+    container_name: xss-lab-js-string
+    ports:
+      - "8024:80"
+    volumes:
+      - ./js_string_xss_lab:/var/www/html
+      - ./js_string_xss_lab/tools/generate_flag.py:/usr/local/bin/generate_flag.py:ro
+    command: >
+      sh -c "php -S 0.0.0.0:80 -t /var/www/html"
+    networks:
+      - tracking-network
+    extra_hosts:
+      - "tracking-service:host-gateway"
+
+  # Lab 6: Stored XSS Href Lab
+  stored-xss-href-lab:
+    build: .
+    container_name: xss-lab-stored-href
+    ports:
+      - "8025:80"
+    volumes:
+      - ./stored_xss_href_lab:/var/www/html
+      - ./stored_xss_href_lab/tools/generate_flag.py:/usr/local/bin/generate_flag.py:ro
+    command: >
+      sh -c "php -S 0.0.0.0:80 -t /var/www/html"
+    networks:
+      - tracking-network
+    extra_hosts:
+      - "tracking-service:host-gateway"
+
+  # Lab 7: JS Context XSS Lab
+  js-context-xss-lab:
+    build: .
+    container_name: xss-lab-js-context
+    ports:
+      - "8026:80"
+    volumes:
+      - ./labs:/var/www/html
+    command: >
+      sh -c "cp js_context_xss_lab.html index.html && php -S 0.0.0.0:80"
+    networks:
+      - tracking-network
+    extra_hosts:
+      - "tracking-service:host-gateway"
+
+  # Lab 8: JSON XSS Lab
+  json-xss-lab:
+    build: .
+    container_name: xss-lab-json
+    ports:
+      - "8027:80"
+    volumes:
+      - ./labs:/var/www/html
+    command: >
+      sh -c "cp json_xss_lab.html index.html && php -S 0.0.0.0:80"
+    networks:
+      - tracking-network
+    extra_hosts:
+      - "tracking-service:host-gateway"
+
+  # Lab 9: Formaction XSS Lab
+  formaction-xss-lab:
+    build: .
+    container_name: xss-lab-formaction
+    ports:
+      - "8028:80"
+    volumes:
+      - ./formaction_xss_lab:/var/www/html
+      - ./formaction_xss_lab/tools/generate_flag.py:/usr/local/bin/generate_flag.py:ro
+    command: >
+      sh -c "php -S 0.0.0.0:80 -t /var/www/html"
+    networks:
+      - tracking-network
+    extra_hosts:
+      - "tracking-service:host-gateway"
+
+  # Lab 10: DOM Hash innerHTML XSS Lab (NEW)
+  hash-innerhtml-xss-lab:
+    build: .
+    container_name: xss-lab-hash-innerhtml
+    ports:
+      - "8029:80"
+    volumes:
+      - ./hash_innerhtml_xss_lab:/var/www/html
+    command: >
+      sh -c "php -S 0.0.0.0:80 -t /var/www/html"
+    networks:
+      - tracking-network
+    extra_hosts:
+      - "tracking-service:host-gateway"
+
+  # Lab 11: Search Query Reflected XSS Lab (NEW)
+  search-query-xss-lab:
+    build: .
+    container_name: xss-lab-search-query
+    ports:
+      - "8030:80"
+    volumes:
+      - ./search_query_xss_lab:/var/www/html
+      - ../tools:/app/tools
+    command: >
+      sh -c "php -S 0.0.0.0:80 -t /var/www/html"
+    networks:
+      - tracking-network
+    extra_hosts:
+      - "tracking-service:host-gateway"
+
+  # Lab 12: Attribute XSS Lab - Reflected XSS in HTML Attribute Context (NEW)
+  attribute-xss-lab:
+    build: .
+    container_name: xss-lab-attribute
+    ports:
+      - "8031:80"
+    volumes:
+      - ./attribute_xss_lab:/var/www/html
+      - ../tools:/app/tools
+    command: >
+      sh -c "php -S 0.0.0.0:80 -t /var/www/html"
+    networks:
+      - tracking-network
+    extra_hosts:
+      - "tracking-service:host-gateway"
+
+  # Lab 13: JS String Context XSS Lab - Reflected XSS in JavaScript String (NEW)
+  js-string-context-lab:
+    build: .
+    container_name: xss-lab-js-string-context
+    ports:
+      - "8032:80"
+    volumes:
+      - ./js_string_context_lab:/var/www/html
+      - ../tools:/app/tools
+    command: >
+      sh -c "php -S 0.0.0.0:80 -t /var/www/html"
+    networks:
+      - tracking-network
+    extra_hosts:
+      - "tracking-service:host-gateway"
+
+  # Lab 14: Document.write XSS Lab - Reflected XSS via document.write() (NEW)
+  document-write-lab:
+    build: .
+    container_name: xss-lab-document-write
+    ports:
+      - "8033:80"
+    volumes:
+      - ./document_write_lab:/var/www/html
+      - ../tools:/app/tools
+    command: >
+      sh -c "php -S 0.0.0.0:80 -t /var/www/html"
+    networks:
+      - tracking-network
+    extra_hosts:
+      - "tracking-service:host-gateway"
+
+  # Lab 15: innerHTML XSS Lab - Reflected XSS via innerHTML injection (NEW)
+  innerhtml-lab:
+    build: .
+    container_name: xss-lab-innerhtml
+    ports:
+      - "8034:80"
+    volumes:
+      - ./innerhtml_lab:/var/www/html
+      - ../tools:/app/tools
+    command: >
+      sh -c "php -S 0.0.0.0:80 -t /var/www/html"
+    networks:
+      - tracking-network
+    extra_hosts:
+      - "tracking-service:host-gateway"
+
+networks:
+  tracking-network:
+    external: true

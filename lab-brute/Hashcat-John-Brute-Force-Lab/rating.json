@@ -1,0 +1,103 @@
+{
+  "lab_name": "Hashcat John Brute Force Lab",
+  "lab_id": "hashcat-john-brute-force-lab",
+  "port": 6002,
+  "rating": {
+    "level": "Intermediate",
+    "difficulty": 2,
+    "difficulty_scale": {
+      "min": 1,
+      "max": 10,
+      "current": 5
+    },
+    "points": 250,
+    "estimated_time": "30-60 minutes",
+    "attempts_allowed": "unlimited"
+  },
+  "skills_required": [
+    {
+      "skill": "MD5 Hash Cracking",
+      "level": "Intermediate"
+    },
+    {
+      "skill": "Hashcat Tool",
+      "level": "Intermediate"
+    },
+    {
+      "skill": "John the Ripper",
+      "level": "Intermediate"
+    },
+    {
+      "skill": "Directory Enumeration",
+      "level": "Beginner"
+    },
+    {
+      "skill": "HTTP Header Analysis",
+      "level": "Beginner"
+    }
+  ],
+  "learning_objectives": [
+    "Master MD5 hash cracking techniques",
+    "Learn Hashcat syntax and options",
+    "Learn John the Ripper basics",
+    "Discover hidden endpoints",
+    "Understand HTTP header manipulation"
+  ],
+  "prerequisites": [
+    "Completed Brute-Force-Password-Challenge lab",
+    "Knowledge of password hashing algorithms",
+    "Familiarity with Hashcat or John the Ripper",
+    "Basic web enumeration skills"
+  ],
+  "challenges": [
+    {
+      "name": "Enumerate Application",
+      "points": 30,
+      "description": "Find all hidden endpoints and features"
+    },
+    {
+      "name": "Discover Hash Endpoint",
+      "points": 40,
+      "description": "Find the /hash endpoint with proper header"
+    },
+    {
+      "name": "Download Wordlist",
+      "points": 30,
+      "description": "Find and download the wordlist file"
+    },
+    {
+      "name": "Crack MD5 Hash",
+      "points": 150,
+      "description": "Use Hashcat or John to crack the password"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "cost": 25,
+      "hint": "Try sending HTTP headers to discover debug endpoints"
+    },
+    {
+      "level": 2,
+      "cost": 40,
+      "hint": "The X-Debug header might reveal something useful"
+    },
+    {
+      "level": 3,
+      "cost": 50,
+      "hint": "There's a downloadable wordlist at /download-wordlist"
+    },
+    {
+      "level": 4,
+      "cost": 60,
+      "hint": "MD5 hash can be cracked with: hashcat -m 0 hash.txt wordlist.txt"
+    }
+  ],
+  "flag": "CTF{hashcat_john_md5_cracked}",
+  "metadata": {
+    "author": "CTF Lab Creator",
+    "version": "1.0",
+    "category": "Brute Force",
+    "tags": ["web", "hashcat", "john", "md5", "intermediate"]
+  }
+}

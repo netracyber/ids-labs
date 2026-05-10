@@ -1,0 +1,13 @@
+# Solusi Lab: SQL Injection DB Version (Port 5006)
+
+## Cara Mendapatkan Flag:
+
+1. Akses aplikasi di http://localhost:5006
+2. Temukan parameter yang rentan terhadap SQL injection
+3. Gunakan teknik error-based atau UNION-based untuk mendapatkan informasi versi database
+4. Contoh payload untuk mendapatkan versi:
+   - Parameter: id=1 AND 1=CONVERT(int,@@version)--
+   - Parameter: id=1 UNION SELECT @@version,2--
+   - Parameter: id=1' AND (SELECT SUBSTRING(version(),1,1))='5'--
+5. Setelah mengetahui versi database, eksploitasi lebih lanjut untuk mendapatkan flag
+6. Cari tabel yang mungkin berisi flag dan ekstrak datanya

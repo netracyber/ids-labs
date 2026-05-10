@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  lab:
+    build: .
+    ports:
+      - "6004:6004"
+    restart: unless-stopped
+    container_name: brute-force-advanced-lab

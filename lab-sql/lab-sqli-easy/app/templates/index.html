@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProductHub - PostgreSQL Database</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            min-height: 100vh;
+            color: #fff;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px 30px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            background: linear-gradient(90deg, #10b981, #059669);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav a {
+            color: #10b981;
+            text-decoration: none;
+            margin-left: 20px;
+            transition: color 0.3s;
+        }
+
+        .nav a:hover {
+            color: #34d399;
+        }
+
+        .search-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .search-card h2 {
+            margin-bottom: 15px;
+            color: #10b981;
+        }
+
+        .search-card p {
+            color: #94a3b8;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .search-form {
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-form input {
+            flex: 1;
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 15px;
+        }
+
+        .search-form input:focus {
+            outline: none;
+            border-color: #10b981;
+        }
+
+        .search-form button {
+            padding: 14px 30px;
+            background: linear-gradient(90deg, #10b981, #059669);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .result-found {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .result-found h3 {
+            color: #10b981;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .product-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .product-name {
+            color: #34d399;
+            font-weight: 600;
+        }
+
+        .product-desc {
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border-left: 4px solid #ef4444;
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+        }
+
+        .error-title {
+            color: #ef4444;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .error-content {
+            color: #f87171;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            word-break: break-all;
+        }
+
+        .query-debug {
+            background: rgba(0, 217, 255, 0.1);
+            border: 1px solid rgba(0, 217, 255, 0.3);
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #7dd3fc;
+        }
+
+        .query-debug strong {
+            display: block;
+            margin-bottom: 8px;
+            color: #00d9ff;
+        }
+
+        .hint-box {
+            background: rgba(99, 102, 241, 0.1);
+            border-left: 4px solid #6366f1;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .hint-box p {
+            color: #818cf8;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .info-box {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-top: 20px;
+            color: #cbd5e1;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .info-box p {
+            color: #94a3b8;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>ProductHub</h1>
+            <nav class="nav">
+                <a href="/">Home</a>
+                <a href="/admin">Admin</a>
+                <a href="/source">Query Info</a>
+            </nav>
+        </div>
+
+        <!-- Hidden clue in HTML comment -->
+        <!--
+        ================================================================
+        POSTGRESQL ERROR-BASED SQL INJECTION
+
+        This lab uses PostgreSQL with verbose error messages.
+        Extract data through type casting and syntax errors.
+
+        DATABASE SCHEMA:
+        Table: products (id, name, description, price, category)
+        Table: secret_admin (id, username, password, role, flag)
+
+        TYPE CASTING FOR DATA EXTRACTION:
+        - CAST(column AS type) - Force type conversion
+        - column::type - PostgreSQL type casting syntax
+        - '1'::int - Cast to integer
+        - 'a'::text - Cast to text
+
+        ERROR EXTRACTION:
+        - Type mismatch errors reveal column types
+        - Syntax errors reveal query structure
+        - Use CASE statements for boolean logic
+        - Use UNION with type casting
+
+        EXAMPLE PAYLOADS:
+        - Extract table names: 1' AND 1=CAST((SELECT tablename FROM pg_tables)::text, 1)::int
+        - Extract column info: 1'::int (SELECT column_name FROM information_schema.columns WHERE table_name='products' LIMIT 1)::text
+        - Type casting: 1'::text, (SELECT string_agg(column_name) FROM information_schema.columns WHERE table_name='products')::text
+        ================================================================
+        -->
+
+        <div class="search-card">
+            <h2>Product Lookup</h2>
+            <p>Enter a product ID to view details from our PostgreSQL database.</p>
+
+            {% if error %}
+            <div class="error-message">
+                <div class="error-title">Database Error</div>
+                <div class="error-content">{{ error }}</div>
+            </div>
+            {% endif %}
+
+            {% if query_debug %}
+            <div class="query-debug">
+                <strong>Query Executed:</strong>
+                {{ query_debug }}
+            </div>
+            {% endif %}
+
+            <form action="/lookup" method="GET" class="search-form">
+                <input type="text" name="id" placeholder="Enter product ID (e.g., 1)" value="{{ product_id }}" required>
+                <button type="submit">Search</button>
+            </form>
+
+            {% if random_hint %}
+            <div class="hint-box">
+                <p>{{ random_hint }}</p>
+            </div>
+            {% endif %}
+
+            <div class="info-box">
+                <p><strong>Available Products:</strong></p>
+                <p>1 - Gaming Laptop | Electronics | $1299.99</p>
+                <p>2 - Wireless Mouse | Electronics | $29.99</p>
+                <p>3 - Mechanical Keyboard | Electronics | $89.99</p>
+                <p>4 - Coffee Maker | Appliances | $149.99</p>
+            </div>
+
+            <!-- Additional hints -->
+            <div style="margin-top: 20px; padding: 15px; background: rgba(99, 102, 241, 0.1); border-radius: 8px; font-size: 12px; color: #ddd;">
+                <strong>💡 System Tip:</strong> PostgreSQL error messages can reveal valuable information. Try crafting queries that cause type-related errors...
+            </div>
+        </div>
+
+        {% if product %}
+        <div class="result-found">
+            <h3>Product Found!</h3>
+            <div class="product-info">
+                <div>
+                    <span class="product-name">Name:</span>
+                    <span>{{ product[1] }}</span>
+                </div>
+                <div>
+                    <span class="product-desc">{{ product[2] }}</span>
+                </div>
+                <div>
+                    <span class="product-desc">Price: ${{ product[3] }}</span>
+                </div>
+                <div>
+                    <span class="product-desc">Category: {{ product[4] }}</span>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

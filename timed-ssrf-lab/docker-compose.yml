@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  timed-ssrf-app:
+    build: .
+    container_name: timed-ssrf-lab
+    ports:
+      - "8043:80"
+    restart: unless-stopped
+    networks:
+      timed-ssrf-network:
+        ipv4_address: 172.33.0.10
+      tracking-network:
+    extra_hosts:
+      - "tracking-service:host-gateway"
+
+  timed-internal-api:
+    build: ./internal-api
+    container_name: timed-internal-api
+    restart: unless-stopped
+    networks:
+      timed-ssrf-network:
+        ipv4_address: 172.33.0.50
+        aliases:
+          - timed-internal-api
+          - secret-api
+
+networks:
+  timed-ssrf-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.33.0.0/16
+  tracking-network:
+    external: true

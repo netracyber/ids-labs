@@ -1,0 +1,113 @@
+{
+  "host": "72.61.140.122:8000",
+  "csrf_token": "d0a5632ff03824c110c32306fed24f51bf9a5bdd9c0f280d8d3789e14a5531ee",
+  "session_cookie": "d9816a04-1675-49d2-b205-9e57b2f8b1fb.6294QEjHBbnd1OSoidwtxGFqH5Q",
+  "total_challenges": 15,
+  "challenges": [
+    {
+      "name": "Search Query XSS Lab",
+      "category": "XSS",
+      "value": "100",
+      "type": "standard",
+      "state": "hidden"
+    },
+    {
+      "name": "Attribute XSS Lab",
+      "category": "XSS",
+      "value": "100",
+      "type": "standard",
+      "state": "hidden"
+    },
+    {
+      "name": "JS String Context XSS Lab",
+      "category": "XSS",
+      "value": "150",
+      "type": "standard",
+      "state": "hidden"
+    },
+    {
+      "name": "Document.write XSS Lab",
+      "category": "XSS",
+      "value": "150",
+      "type": "standard",
+      "state": "hidden"
+    },
+    {
+      "name": "innerHTML XSS Lab",
+      "category": "XSS",
+      "value": "150",
+      "type": "standard",
+      "state": "hidden"
+    },
+    {
+      "name": "DOM XSS in innerHTML with location.search",
+      "category": "XSS",
+      "value": "200",
+      "type": "standard",
+      "state": "hidden"
+    },
+    {
+      "name": "Formaction XSS Lab",
+      "category": "XSS",
+      "value": "200",
+      "type": "standard",
+      "state": "hidden"
+    },
+    {
+      "name": "DOM Hash XSS Lab",
+      "category": "XSS",
+      "value": "200",
+      "type": "standard",
+      "state": "hidden"
+    },
+    {
+      "name": "Stored XSS Lab - HTML Context",
+      "category": "XSS",
+      "value": "250",
+      "type": "standard",
+      "state": "hidden"
+    },
+    {
+      "name": "Stored XSS in anchor href attribute",
+      "category": "XSS",
+      "value": "250",
+      "type": "standard",
+      "state": "hidden"
+    },
+    {
+      "name": "DOM-based XSS Lab - Document Location",
+      "category": "XSS",
+      "value": "300",
+      "type": "standard",
+      "state": "hidden"
+    },
+    {
+      "name": "Reflected XSS - Event Handler Attribute",
+      "category": "XSS",
+      "value": "300",
+      "type": "standard",
+      "state": "hidden"
+    },
+    {
+      "name": "Reflected XSS - JavaScript String Context",
+      "category": "XSS",
+      "value": "300",
+      "type": "standard",
+      "state": "hidden"
+    },
+    {
+      "name": "Reflected XSS - Input Filter Bypass",
+      "category": "XSS",
+      "value": "350",
+      "type": "standard",
+      "state": "hidden"
+    },
+    {
+      "name": "DOM XSS Lab - document.write with location.search",
+      "category": "XSS",
+      "value": "250",
+      "type": "standard",
+      "state": "hidden"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  lfi-lab:
+    build: .
+    container_name: lfi-lab
+    ports:
+      - "8039:80"
+    volumes:
+      - ./logs:/var/log/apache2
+    restart: unless-stopped
+    networks:
+      - lfi-network
+      - tracking-network
+
+networks:
+  lfi-network:
+    driver: bridge
+  tracking-network:
+    external: true

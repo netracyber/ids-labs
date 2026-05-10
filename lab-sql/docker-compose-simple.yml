@@ -1,0 +1,53 @@
+version: '3.8'
+
+# Main Docker Compose untuk SQL Injection Labs (tanpa Oracle)
+# Semua lab berjalan dalam container terpisah dengan port berbeda
+
+services:
+  # Lab 1: SQL Injection Login Bypass
+  sqli-login-bypass:
+    build: ./sql-injection-login-bypass
+    container_name: sqli-login-bypass
+    ports:
+      - "5001:5000"
+    restart: unless-stopped
+
+  # Lab 2: SQL Injection Other Endpoints
+  sqli-other-endpoints:
+    build: ./sqli-other-endpoints
+    container_name: sqli-other-endpoints
+    ports:
+      - "5002:5000"
+    restart: unless-stopped
+
+  # Lab 3: SQL Injection Hidden Data
+  sqli-hidden-data:
+    build: ./sqli-hidden-data
+    container_name: sqli-hidden-data
+    ports:
+      - "5003:5000"
+    restart: unless-stopped
+
+  # Lab 4: Oracle Version Lab
+  oracle-version-lab:
+    build: ./oracle-version-lab
+    container_name: oracle-version-lab
+    ports:
+      - "5005:5005"
+    restart: unless-stopped
+
+  # Lab 5: SQL Injection DB Version
+  sqli-db-version:
+    build: ./sqli-db-version
+    container_name: sqli-db-version
+    ports:
+      - "5006:5000"
+    restart: unless-stopped
+
+  # Lab 6: SQL Injection Lab (Complete Login System)
+  sql-injection-lab:
+    build: ./SQL-Injection-Lab
+    container_name: sql-injection-lab
+    ports:
+      - "6003:6003"
+    restart: unless-stopped

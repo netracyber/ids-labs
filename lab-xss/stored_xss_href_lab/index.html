@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureBlog - Read & Share Stories</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .nav {
+            background-color: #34495e;
+            padding: 10px;
+            text-align: center;
+        }
+        .nav a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 15px;
+            display: inline-block;
+        }
+        .nav a:hover {
+            background-color: #2c3e50;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .post {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .post-title {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        .post-content {
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        .post-meta {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-bottom: 15px;
+        }
+        .comments-section {
+            margin-top: 30px;
+        }
+        .comment-form {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #ecf0f1;
+            border-radius: 5px;
+        }
+        .comment-form input, .comment-form textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .comment-form button {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .comment-form button:hover {
+            background-color: #2980b9;
+        }
+        .comment {
+            margin: 15px 0;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-left: 3px solid #3498db;
+        }
+        .comment-author {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .comment-date {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+        .comment-content {
+            margin-top: 5px;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #ecf0f1;
+            color: #7f8c8d;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>SecureBlog</h1>
+        <p>Read and share interesting stories from the community</p>
+    </div>
+
+    <div class="nav">
+        <a href="#">Home</a>
+        <a href="#">Popular Posts</a>
+        <a href="#">Categories</a>
+        <a href="#">About</a>
+    </div>
+
+    <div class="container">
+        <div class="post">
+            <h2 class="post-title">The Future of Web Security</h2>
+            <div class="post-meta">Posted by Admin on January 7, 2026</div>
+            <div class="post-content">
+                <p>Web security continues to evolve as new threats emerge and technology advances. 
+                It's crucial for developers to stay updated with the latest security practices and 
+                vulnerabilities to protect their applications and users.</p>
+                
+                <p>One of the most common vulnerabilities we see today is Cross-Site Scripting (XSS), 
+                which allows attackers to inject malicious scripts into web pages viewed by other users. 
+                Understanding how to prevent these attacks is essential for any web developer.</p>
+            </div>
+            
+            <div class="comments-section">
+                <h3>Comments</h3>
+                
+                <!-- Comments will be loaded here -->
+                <div id="comments-container">
+                    <!-- Comments will be dynamically loaded from view_post.php -->
+                </div>
+                
+                <div class="comment-form">
+                    <h4>Leave a Comment</h4>
+                    <form action="submit_comment.php" method="POST">
+                        <input type="text" name="author" placeholder="Your Name" required>
+                        <input type="email" name="email" placeholder="Your Email" required>
+                        <input type="url" name="website" placeholder="Website (optional)">
+                        <textarea name="comment" placeholder="Your Comment" rows="4" required></textarea>
+                        <button type="submit">Post Comment</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2026 SecureBlog. All rights reserved.</p>
+    </div>
+
+    <script>
+        // Load comments dynamically
+        fetch('view_post.php')
+            .then(response => response.text())
+            .then(data => {
+                // Extract just the comments part from the response
+                const temp = document.createElement('div');
+                temp.innerHTML = data;
+                const commentsDiv = temp.querySelector('#comments-container');
+                if (commentsDiv) {
+                    document.getElementById('comments-container').innerHTML = commentsDiv.innerHTML;
+                }
+            })
+            .catch(error => console.error('Error loading comments:', error));
+    </script>
+</body>
+</html>

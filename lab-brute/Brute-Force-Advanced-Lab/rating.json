@@ -1,0 +1,123 @@
+{
+  "lab_name": "Brute Force Advanced Lab",
+  "lab_id": "brute-force-advanced-lab",
+  "port": 6004,
+  "rating": {
+    "level": "Advanced",
+    "difficulty": 3,
+    "difficulty_scale": {
+      "min": 1,
+      "max": 10,
+      "current": 8
+    },
+    "points": 500,
+    "estimated_time": "60-120 minutes",
+    "attempts_allowed": "3 per IP (rate limited)"
+  },
+  "skills_required": [
+    {
+      "skill": "Advanced Brute Force Techniques",
+      "level": "Advanced"
+    },
+    {
+      "skill": "Rate Limit Bypass",
+      "level": "Advanced"
+    },
+    {
+      "skill": "Distributed Attacks",
+      "level": "Intermediate"
+    },
+    {
+      "skill": "Timing Analysis",
+      "level": "Intermediate"
+    },
+    {
+      "skill": "Smart Dictionary Attacks",
+      "level": "Advanced"
+    },
+    {
+      "skill": "Request Optimization",
+      "level": "Advanced"
+    }
+  ],
+  "learning_objectives": [
+    "Understand rate limiting mechanisms",
+    "Learn techniques to bypass rate limits",
+    "Implement distributed brute force attacks",
+    "Optimize attack efficiency",
+    "Handle timing-based restrictions",
+    "Create targeted wordlists"
+  ],
+  "prerequisites": [
+    "Completed Hashcat-John-Brute-Force-Lab",
+    "Strong Python scripting skills",
+    "Understanding of HTTP protocols",
+    "Knowledge of rate limiting concepts",
+    "Experience with threading/multiprocessing"
+  ],
+  "challenges": [
+    {
+      "name": "Analyze Rate Limiting",
+      "points": 75,
+      "description": "Determine the rate limit rules and timing"
+    },
+    {
+      "name": "Bypass Simple Rate Limit",
+      "points": 125,
+      "description": "Find ways around basic restrictions"
+    },
+    {
+      "name": "Optimize Attack Strategy",
+      "points": 150,
+      "description": "Create efficient attack patterns"
+    },
+    {
+      "name": "Successful Brute Force",
+      "points": 150,
+      "description": "Crack the password within constraints"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "cost": 50,
+      "hint": "Rate limiting is based on IP address and timing"
+    },
+    {
+      "level": 2,
+      "cost": 75,
+      "hint": "Consider using distributed IP sources or timing delays"
+    },
+    {
+      "level": 3,
+      "cost": 100,
+      "hint": "Smart wordlist reduction is more effective than raw speed"
+    },
+    {
+      "level": 4,
+      "cost": 125,
+      "hint": "The password follows common patterns but requires strategy"
+    }
+  ],
+  "countermeasures": [
+    {
+      "name": "IP Rate Limiting",
+      "description": "3 attempts per IP address"
+    },
+    {
+      "name": "Time-based Blocking",
+      "description": "Temporary blocks after exceeding limits"
+    },
+    {
+      "name": "Account Lockout",
+      "description": "Progressive delay mechanism"
+    }
+  ],
+  "flag": "CTF{advanced_brute_force_rate_limit_bypassed}",
+  "metadata": {
+    "author": "CTF Lab Creator",
+    "version": "1.0",
+    "category": "Brute Force",
+    "tags": ["web", "advanced", "rate-limiting", "bypass", "python"]
+  }
+}

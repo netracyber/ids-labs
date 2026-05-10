@@ -1,0 +1,31 @@
+{
+    "name": "Oracle SQL Injection - Version Detection",
+    "category": "Web Exploitation",
+    "description": "Exploit a SQL injection vulnerability on Oracle database to detect version and obtain the flag.",
+    "value": 250,
+    "flags": [
+        {
+            "type": "static",
+            "content": "IDS{c5b4a3f2e1d0g9h8i7j6k5l4m3n2o1p0q}",
+            "data": ""
+        }
+    ],
+    "tags": [
+        "SQLi",
+        "Oracle",
+        "Web",
+        "Injection",
+        "Version Detection"
+    ],
+    "files": [],
+    "hints": [
+        {
+            "cost": 25,
+            "content": "Identify that the database is Oracle and use Oracle-specific payloads."
+        },
+        {
+            "cost": 50,
+            "content": "Try to get Oracle version using appropriate functions."
+        }
+    ]
+}

@@ -1,0 +1,322 @@
+# PROMPT V8.2 – FINAL EXECUTION MASTER SPEC
+
+This document is the COMPLETE execution-ready blueprint for generating and deploying 16 SQL Injection labs with production-grade infrastructure.
+
+Execution Readiness: 100%
+Target Environment: VPS / Dedicated Server
+Target Participants: 100–150 concurrent users
+
+---
+
+# 1. GLOBAL SPECIFICATION
+
+Total Labs: 16
+Distribution: 6 Easy / 5 Medium / 5 Hard
+External Docker Network: ctf_net
+Reverse Proxy: Dedicated Nginx Stack
+Database: MySQL 8
+Backend: PHP 8.2 (Apache)
+Monitoring: Separate Compose Stack
+Flag Policy: Dynamic per container startup
+Resource Limit: 512M per container
+Host Ports: ONLY Nginx exposes ports
+
+---
+
+# 2. DOCKER NETWORK INITIALIZATION
+
+Run once before deployment:
+
+```
+docker network create ctf_net
+```
+
+All lab containers must use:
+
+networks:
+ctf_net:
+external: true
+
+No database container may expose host ports.
+
+---
+
+# 3. IMPLEMENTATION MATRIX (ALL 16 LABS – COMPLETE)
+
+Columns:
+Lab | Diff | Endpoint | Injection | Product Table | Columns | Flag Table | Flag Column | Storage | Hint | Notes
+
+E1 | Easy | /search.php?q= | UNION | products | id,name,price | flags | flag | DB | HTML comment | Classic union
+E2 | Easy | /item.php?id= | Error-based | products | id,name,desc | flags | flag | DB | SQL error leak | Error visible
+E3 | Easy | /login.php | Auth bypass | users | id,user,pass | flags | flag | DB | Login message | OR 1=1
+E4 | Easy | /filter.php?cat= | UNION | categories | id,name | flags | flag | DB | JS comment | Column hint
+E5 | Easy | /order.php?id= | UNION | orders | id,user,total | flags | flag | DB | UI mislead | Hidden text
+E6 | Easy | /profile.php?id= | UNION | users | id,user,email | flags | flag | DB | Hidden param | id parameter
+
+M1 | Medium | /report.php?id= | Boolean blind | reports | id,title,data | flags | flag | DB | Timing text | No error
+M2 | Medium | /account.php?id= | Filtered union | accounts | id,user,balance | flags | flag | DB | Keyword filtered | union blocked
+M3 | Medium | /search.php | Time-based | products | id,name,price | flags | flag | DB | Delay behavior | sleep()
+M4 | Medium | /admin.php?id= | Numeric | admins | id,name,role | flags | flag | DB | Role hint | int only
+M5 | Medium | /export.php?id= | Order-based | exports | id,file | flags | flag | DB | Sorting issue | order by idx
+
+H1 | Hard | /api/user?id= | Blind no-error | users | id,user,hash | flags | flag | DB | None | JSON output
+H2 | Hard | /dashboard.php | Second-order | logs | id,event | flags | flag | DB | Indirect | Stored trigger
+H3 | Hard | /stats.php?id= | Double encoding | stats | id,data | flags | flag | DB | Encoded param | %2527
+H4 | Hard | /secure.php?id= | Filter bypass | secure | id,data | flags | flag | DB | WAF simulate | regex block
+H5 | Hard | /hidden.php?id= | Stacked query | misc | id,value | flags | flag | DB | Hidden route | Uses mysqli_multi_query
+
+Stacked Query Clarification:
+H5 MUST use mysqli_multi_query(). If environment blocks stacked queries, replace with time-based blind.
+
+---
+
+# 4. FLAG GENERATION STANDARD (MANDATORY FOR ALL LABS)
+
+Every lab must include generate_flag.py and entrypoint.sh.
+
+## generate_flag.py
+
+import random,string
+flag='IDS{'+''.join(random.choices(string.ascii_uppercase+string.digits,k=14))+'}'
+open('/tmp/flag.txt','w').write(flag)
+print(flag)
+
+## entrypoint.sh
+
+#!/bin/bash
+sleep 5
+python3 /app/generate_flag.py
+FLAG=$(cat /tmp/flag.txt)
+mysql -h lab_eX_db -uroot -proot lab -e "UPDATE flags SET flag='$FLAG' WHERE id=1;"
+apache2-foreground
+
+Replace lab_eX_db per lab.
+
+---
+
+# 5. COMPLETE E1 TEMPLATE (COPY‑PASTE READY)
+
+Directory:
+lab_e1/
+├── docker-compose.yml
+├── Dockerfile
+├── entrypoint.sh
+├── init.sql
+├── generate_flag.py
+└── src/search.php
+
+## docker-compose.yml
+
+version: '3.9'
+services:
+lab_e1_db:
+image: mysql:8
+container_name: lab_e1_db
+environment:
+MYSQL_ROOT_PASSWORD: root
+MYSQL_DATABASE: lab
+networks:
+- ctf_net
+mem_limit: 512m
+
+lab_e1_web:
+build: .
+container_name: lab_e1_web
+depends_on:
+- lab_e1_db
+networks:
+- ctf_net
+mem_limit: 512m
+
+networks:
+ctf_net:
+external: true
+
+(NO HOST PORTS)
+
+## Dockerfile
+
+FROM php:8.2-apache
+RUN docker-php-ext-install mysqli pdo pdo_mysql
+COPY src/ /var/www/html/
+COPY generate_flag.py /app/generate_flag.py
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
+
+## init.sql
+
+CREATE TABLE products (
+id INT AUTO_INCREMENT PRIMARY KEY,
+name VARCHAR(50),
+price INT
+);
+
+INSERT INTO products (name,price) VALUES ('Laptop',1500);
+
+CREATE TABLE flags (
+id INT PRIMARY KEY,
+flag VARCHAR(100)
+);
+
+INSERT INTO flags VALUES (1,'TEMP_FLAG');
+
+## src/search.php
+
+<?php
+$conn=new mysqli("lab_e1_db","root","root","lab");
+$q=$_GET['q'];
+$sql="SELECT id,name,price FROM products WHERE name LIKE '%$q%'";
+$res=$conn->query($sql);
+while($r=$res->fetch_assoc()){
+ echo $r['name']." - $".$r['price']."<br>";
+}
+// admin testing parameter q
+?>
+
+---
+
+# 6. NGINX STACK (SEPARATE COMPOSE)
+
+nginx/docker-compose.yml
+
+version: '3.9'
+services:
+nginx:
+image: nginx:latest
+container_name: ctf_nginx
+volumes:
+- ./nginx.conf:/etc/nginx/nginx.conf
+ports:
+- "80:80"
+networks:
+- ctf_net
+
+networks:
+ctf_net:
+external: true
+
+---
+
+# 7. FULL nginx.conf
+
+worker_processes auto;
+
+events { worker_connections 1024; }
+
+http {
+
+upstream lab_e1 { server lab_e1_web:80; }
+upstream lab_e2 { server lab_e2_web:80; }
+upstream lab_e3 { server lab_e3_web:80; }
+upstream lab_e4 { server lab_e4_web:80; }
+upstream lab_e5 { server lab_e5_web:80; }
+upstream lab_e6 { server lab_e6_web:80; }
+upstream lab_m1 { server lab_m1_web:80; }
+upstream lab_m2 { server lab_m2_web:80; }
+upstream lab_m3 { server lab_m3_web:80; }
+upstream lab_m4 { server lab_m4_web:80; }
+upstream lab_m5 { server lab_m5_web:80; }
+upstream lab_h1 { server lab_h1_web:80; }
+upstream lab_h2 { server lab_h2_web:80; }
+upstream lab_h3 { server lab_h3_web:80; }
+upstream lab_h4 { server lab_h4_web:80; }
+upstream lab_h5 { server lab_h5_web:80; }
+
+server {
+listen 80;
+
+```
+location /e1/ { proxy_pass http://lab_e1/; }
+location /e2/ { proxy_pass http://lab_e2/; }
+location /e3/ { proxy_pass http://lab_e3/; }
+location /e4/ { proxy_pass http://lab_e4/; }
+location /e5/ { proxy_pass http://lab_e5/; }
+location /e6/ { proxy_pass http://lab_e6/; }
+location /m1/ { proxy_pass http://lab_m1/; }
+location /m2/ { proxy_pass http://lab_m2/; }
+location /m3/ { proxy_pass http://lab_m3/; }
+location /m4/ { proxy_pass http://lab_m4/; }
+location /m5/ { proxy_pass http://lab_m5/; }
+location /h1/ { proxy_pass http://lab_h1/; }
+location /h2/ { proxy_pass http://lab_h2/; }
+location /h3/ { proxy_pass http://lab_h3/; }
+location /h4/ { proxy_pass http://lab_h4/; }
+location /h5/ { proxy_pass http://lab_h5/; }
+```
+
+}
+}
+
+---
+
+# 8. LOAD TEST SCRIPT (k6)
+
+import http from 'k6/http';
+import { sleep } from 'k6';
+
+export let options = {
+vus: 100,
+duration: '2m',
+};
+
+const endpoints = [
+'/e1/search.php?q=test',
+'/e2/item.php?id=1',
+'/e3/login.php',
+'/e4/filter.php?cat=1',
+'/e5/order.php?id=1',
+'/e6/profile.php?id=1',
+'/m1/report.php?id=1',
+'/m2/account.php?id=1',
+'/m3/search.php?q=test',
+'/m4/admin.php?id=1',
+'/m5/export.php?id=1',
+'/h1/api/user?id=1',
+'/h2/dashboard.php',
+'/h3/stats.php?id=1',
+'/h4/secure.php?id=1',
+'/h5/hidden.php?id=1'
+];
+
+export default function () {
+const randomEndpoint = endpoints[Math.floor(Math.random()*endpoints.length)];
+http.get('[http://localhost'+randomEndpoint](http://localhost'+randomEndpoint));
+sleep(1);
+}
+
+---
+
+# 9. EXECUTION INSTRUCTION (MANDATORY)
+
+Generate full 16 labs now using:
+
+* The Implementation Matrix (Section 3)
+* The E1 template structure (Section 5)
+* External network ctf_net
+* No host ports in lab compose
+* mem_limit: 512m per container
+* Dynamic flag generation via generate_flag.py
+* Reverse proxy mapping exactly as nginx.conf
+* Stacked query only via mysqli_multi_query (H5)
+
+---
+
+FINAL STATUS
+
+All required columns filled
+Corrected E1 template included
+Nginx compose + full config included
+Resource limits enforced
+No host ports in labs
+Stacked query clarified
+Execution instruction included
+
+This document is the FINAL DEPLOYMENT MASTER SPEC.
+
+
+
+🔒 **Catatan Penting**
+Lab ini ditujukan untuk **pembelajaran dan simulasi legal** dalam lingkungan terkontrol.
+
+Author lab :IDS – CyberSec Academy Lab Authoring Guideline

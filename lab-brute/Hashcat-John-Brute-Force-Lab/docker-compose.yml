@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  lab:
+    build: .
+    ports:
+      - "6002:6002"
+    restart: unless-stopped
+    container_name: hashcat-john-brute-force-lab

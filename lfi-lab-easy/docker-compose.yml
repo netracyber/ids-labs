@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  lfi-easy:
+    build: .
+    container_name: lfi-easy-lab
+    ports:
+      - "8040:80"
+    restart: unless-stopped
+    networks:
+      - lfi-easy-network
+      - tracking-network
+
+networks:
+  lfi-easy-network:
+    driver: bridge
+  tracking-network:
+    external: true

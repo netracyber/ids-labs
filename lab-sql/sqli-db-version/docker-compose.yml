@@ -1,0 +1,8 @@
+# Docker Compose for SQL Injection Lab - Database Version Query
+# Application with SQL injection vulnerability to query database type and version
+services:
+  sqli-db-version:
+    build: .
+    ports:
+      - "5006:5000"
+    restart: unless-stopped

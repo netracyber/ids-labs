@@ -1,0 +1,87 @@
+{
+  "lab_name": "Brute Force Password Challenge",
+  "lab_id": "brute-force-password-challenge",
+  "port": 6001,
+  "rating": {
+    "level": "Beginner",
+    "difficulty": 1,
+    "difficulty_scale": {
+      "min": 1,
+      "max": 10,
+      "current": 2
+    },
+    "points": 100,
+    "estimated_time": "15-30 minutes",
+    "attempts_allowed": "unlimited"
+  },
+  "skills_required": [
+    {
+      "skill": "Basic HTTP Requests",
+      "level": "Beginner"
+    },
+    {
+      "skill": "Hash Identification",
+      "level": "Beginner"
+    },
+    {
+      "skill": "Dictionary Attack",
+      "level": "Beginner"
+    },
+    {
+      "skill": "SHA-256 Hashing",
+      "level": "Beginner"
+    }
+  ],
+  "learning_objectives": [
+    "Understand basic password hashing",
+    "Learn how to perform dictionary attacks",
+    "Identify SHA-256 hashes",
+    "Use tools like Hydra or custom scripts"
+  ],
+  "prerequisites": [
+    "Basic knowledge of Python scripting",
+    "Understanding of HTTP POST requests",
+    "Familiarity with command line tools"
+  ],
+  "challenges": [
+    {
+      "name": "Find Login Page",
+      "points": 10,
+      "description": "Discover and access the login interface"
+    },
+    {
+      "name": "Identify Hash Type",
+      "points": 20,
+      "description": "Recognize SHA-256 hash format"
+    },
+    {
+      "name": "Brute Force Password",
+      "points": 70,
+      "description": "Successfully crack the admin password"
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "cost": 10,
+      "hint": "The password is hashed using SHA-256"
+    },
+    {
+      "level": 2,
+      "cost": 20,
+      "hint": "Try using a common password dictionary like rockyou.txt"
+    },
+    {
+      "level": 3,
+      "cost": 30,
+      "hint": "The username is 'admin' and password is a common word"
+    }
+  ],
+  "flag": "CTF{brute_force_success_sha256}",
+  "metadata": {
+    "author": "CTF Lab Creator",
+    "version": "1.0",
+    "category": "Brute Force",
+    "tags": ["web", "brute-force", "hashing", "beginner"]
+  }
+}

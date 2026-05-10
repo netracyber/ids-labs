@@ -1,0 +1,6 @@
+Name:
+SQL Injection Hidden Data
+Category:
+SQLi
+Message:
+Akses lab di http://localhost:5003. Gunakan payload SQL injection untuk menemukan data tersembunyi dan mendapatkan flag.

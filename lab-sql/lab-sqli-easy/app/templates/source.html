@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Source Code | ProductHub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            min-height: 100vh;
+            color: #fff;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px 30px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            background: linear-gradient(90deg, #10b981, #059669);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav a {
+            color: #10b981;
+            text-decoration: none;
+            margin-left: 20px;
+            transition: color 0.3s;
+        }
+
+        .nav a:hover {
+            color: #34d399;
+        }
+
+        .source-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .source-card h2 {
+            color: #10b981;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .source-card p {
+            color: #94a3b8;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+
+        .code-block pre {
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #fbbf24;
+            line-height: 1.5;
+            white-space: pre;
+        }
+
+        .vulnerability-box {
+            background: rgba(239, 68, 68, 0.1);
+            border-left: 4px solid #ef4444;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .vulnerability-box h3 {
+            color: #ef4444;
+            margin-bottom: 10px;
+        }
+
+        .vulnerability-box p {
+            color: #f87171;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .technique-box {
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .technique-box h3 {
+            color: #818cf8;
+            margin-bottom: 15px;
+        }
+
+        .technique-box code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 8px;
+            border-radius: 4px;
+            color: #fbbf24;
+            font-family: 'Courier New', monospace;
+        }
+
+        .technique-box ul {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+
+        .technique-box li {
+            color: #94a3b8;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .btn-home {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(90deg, #10b981, #059669);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>ProductHub</h1>
+            <nav class="nav">
+                <a href="/">Home</a>
+                <a href="/admin">Admin</a>
+                <a href="/source">Query Info</a>
+            </nav>
+        </div>
+
+        <div class="source-card">
+            <h2>Vulnerable Query Source</h2>
+            <p>This page reveals the backend code that makes this application vulnerable to PostgreSQL error-based SQL injection.</p>
+
+            <div class="vulnerability-box">
+                <h3>🔴 Critical Vulnerability</h3>
+                <p>The application uses <strong>direct string interpolation</strong> to build SQL queries without any parameterization or input validation. When errors occur, <strong>verbose PostgreSQL error messages</strong> are displayed to the user.</p>
+            </div>
+
+            <h3 style="color: #10b981; margin-bottom: 15px;">Backend Python Code (Flask)</h3>
+            <div class="code-block">
+<pre><code>@app.route('/lookup')
+def lookup():
+    """VULNERABLE LOOKUP FUNCTION"""
+    product_id = request.args.get('id', '')
+
+    # VULNERABLE QUERY: Direct parameter interpolation
+    # This allows error-based data extraction
+    query = f"SELECT * FROM products WHERE id = {product_id}"
+
+    cursor = conn.cursor()
+    cursor.execute(query)
+    result = cursor.fetchone()
+
+    return render_template('index.html', product=result)</code></pre>
+            </div>
+
+            <h3 style="color: #10b981; margin-bottom: 15px; margin-top: 25px;">Error Handler with Verbose Messages</h3>
+            <div class="code-block">
+<pre><code>except Exception as e:
+    # IMPORTANT: Verbose error messages are shown (this is the vulnerability!)
+    error_msg = str(e)
+
+    # Return error with details for exploitation
+    return render_template('index.html',
+        error=error_msg,  # Full PostgreSQL error leaked to user
+        product_id=product_id,
+        query_debug=f"SELECT * FROM products WHERE id = {product_id}"
+    )</code></pre>
+            </div>
+        </div>
+
+        <div class="technique-box">
+            <h3>PostgreSQL Error-Based Injection Techniques</h3>
+            <p style="color: #94a3b8; margin-bottom: 10px;">By crafting specific inputs that cause PostgreSQL errors, you can extract sensitive data:</p>
+
+            <ul>
+                <li><strong>Type Casting:</strong> Use <code>CAST(expr AS type)</code> or <code>expr::type</code> syntax to force type conversions that reveal data</li>
+                <li><strong>Column Enumeration:</strong> Trigger errors that list column names and types in error messages</li>
+                <li><strong>Table Discovery:</strong> Use <code>pg_tables</code> and <code>information_schema</code> with type casting to find hidden tables</li>
+                <li><strong>Data Extraction:</strong> Extract data character-by-character using conditional type casting errors</li>
+                <li><strong>Syntax Leakage:</strong> Malformed queries reveal the underlying SQL structure</li>
+            </ul>
+        </div>
+
+        <div class="source-card">
+            <h3>Database Schema</h3>
+            <div class="code-block">
+<pre><code>-- Products table (public)
+CREATE TABLE products (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+    description TEXT,
+    price TEXT,
+    category TEXT
+);
+
+-- Secret admin table (contains the flag!)
+CREATE TABLE secret_admin (
+    id SERIAL PRIMARY KEY,
+    username TEXT UNIQUE NOT NULL,
+    password TEXT,
+    role TEXT,
+    flag TEXT
+);</code></pre>
+            </div>
+        </div>
+
+        <div class="source-card">
+            <h3 style="color: #10b981;">Exploitation Steps</h3>
+            <p><strong>1. Identify PostgreSQL:</strong> Submit <code>1'</code> to see PostgreSQL-style error messages</p>
+            <p><strong>2. Find Table Names:</strong> Use type casting with <code>pg_tables</code></p>
+            <p><strong>3. Enumerate Columns:</strong> Query <code>information_schema.columns</code></p>
+            <p><strong>4. Extract Data:</strong> Use CAST operations to retrieve usernames and passwords</p>
+            <p><strong>5. Login to Admin:</strong> Use extracted credentials at <code>/admin</code></p>
+
+            <div style="margin-top: 30px;">
+                <a href="/" class="btn-home">Return to Lab</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

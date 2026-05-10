@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  blind-ssrf-app:
+    build: .
+    container_name: blind-ssrf-lab
+    ports:
+      - "8042:80"
+    restart: unless-stopped
+    networks:
+      blind-ssrf-network:
+        ipv4_address: 172.32.0.10
+      tracking-network:
+    extra_hosts:
+      - "tracking-service:host-gateway"
+
+  blind-internal-api:
+    build: ./internal-api
+    container_name: blind-internal-api
+    restart: unless-stopped
+    networks:
+      blind-ssrf-network:
+        ipv4_address: 172.32.0.50
+        aliases:
+          - blind-internal-api
+
+networks:
+  blind-ssrf-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.32.0.0/16
+  tracking-network:
+    external: true

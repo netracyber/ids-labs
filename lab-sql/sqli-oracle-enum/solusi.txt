@@ -1,0 +1,16 @@
+# Solusi Lab: SQL Injection Oracle Enumeration (Port 5007)
+
+## Cara Mendapatkan Flag:
+
+1. Akses aplikasi di http://localhost:5007
+2. Konfirmasi bahwa aplikasi menggunakan database Oracle
+3. Gunakan teknik enumerasi Oracle untuk mengeksplorasi struktur database
+4. Contoh payload untuk enumerasi Oracle:
+   - UNION SELECT table_name FROM user_tables--
+   - UNION SELECT column_name FROM user_tab_columns WHERE table_name='FLAG_TABLE'--
+   - UNION SELECT flag FROM flag_table--
+5. Gunakan view Oracle seperti:
+   - v$version untuk informasi versi
+   - user_tables untuk daftar tabel
+   - user_tab_columns untuk struktur kolom
+6. Lakukan enumerasi secara bertahap untuk menemukan tabel dan kolom yang berisi flag

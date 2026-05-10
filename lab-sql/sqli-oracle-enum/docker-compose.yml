@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  oracle:
+    image: gvenzl/oracle-xe:21-slim
+    environment:
+      ORACLE_PASSWORD: oracle
+      APP_USER: system
+      APP_USER_PASSWORD: oracle
+    ports:
+      - "1527:1521"
+    healthcheck:
+      test: ["CMD", "sqlplus", "-s", "system/oracle@//localhost:1527/XE", "as", "sysdba", "<<<", "SELECT 1 FROM DUAL;"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - ./setup_db.sql:/container-entrypoint-initdb.d/setup_db.sql
+
+  app:
+    build: .
+    ports:
+      - "5007:5000"
+    environment:
+      - DB_HOST=oracle
+      - DB_PORT=1527
+      - DB_NAME=XE
+      - DB_USER=system
+      - DB_PASSWORD=oracle
+    depends_on:
+      oracle:
+        condition: service_healthy
+    restart: unless-stopped

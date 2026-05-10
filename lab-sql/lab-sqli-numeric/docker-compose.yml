@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "0:80"  # Random host port mapped to container port 80
+    volumes:
+      - ./app:/var/www/html
+      - ./tools:/tmp/tools
+    restart: unless-stopped
+    environment:
+      - APP_ENV=development

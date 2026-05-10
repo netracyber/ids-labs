@@ -1,0 +1,31 @@
+{
+    "name": "Oracle SQL Injection - Enumeration",
+    "category": "Web Exploitation",
+    "description": "Exploit a SQL injection vulnerability to enumerate Oracle database structure and obtain the flag.",
+    "value": 300,
+    "flags": [
+        {
+            "type": "static",
+            "content": "IDS{r1s2t3u4v5w6x7y8z9a0b1c2d3e4f5g}",
+            "data": ""
+        }
+    ],
+    "tags": [
+        "SQLi",
+        "Oracle",
+        "Web",
+        "Injection",
+        "Enumeration"
+    ],
+    "files": [],
+    "hints": [
+        {
+            "cost": 25,
+            "content": "Identify that the database is Oracle and use Oracle-specific enumeration techniques."
+        },
+        {
+            "cost": 50,
+            "content": "Try to query Oracle system tables like user_tables or all_tables."
+        }
+    ]
+}

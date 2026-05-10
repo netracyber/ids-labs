@@ -1,0 +1,26 @@
+version: '3.9'
+services:
+  lab_m2_db:
+    image: mysql:8
+    container_name: lab_m2_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: lab
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - ctf_net
+    mem_limit: 512m
+
+  lab_m2_web:
+    build: .
+    container_name: lab_m2_web
+    depends_on:
+      - lab_m2_db
+    networks:
+      - ctf_net
+    mem_limit: 512m
+
+networks:
+  ctf_net:
+    external: true

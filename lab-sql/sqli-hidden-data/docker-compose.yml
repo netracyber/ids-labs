@@ -1,0 +1,8 @@
+# Docker Compose for SQL Injection Lab - Hidden Data Retrieval
+# Application with SQL injection vulnerability in WHERE clause to retrieve hidden data
+services:
+  sqli-hidden-data:
+    build: .
+    ports:
+      - "5003:5000"
+    restart: unless-stopped

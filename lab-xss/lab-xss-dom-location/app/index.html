@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Portal | SecureApp</title>
+    <link rel="stylesheet" href="style.css">
+    <script>
+        // Application configuration
+        const APP_CONFIG = {
+            name: 'SecureApp User Portal',
+            version: '3.2.1',
+            environment: 'production',
+            debug: false,
+            // Session management
+            sessionTimeout: 1800000, // 30 minutes
+            // URL parameters for various features
+            urlParams: {
+                user: 'dashboard.html',
+                redirect: 'location',
+                theme: 'appearance',
+                lang: 'i18n',
+                // Legacy support - some old features use hash-based routing
+                useHash: true
+            }
+        };
+
+        // Security notice (visible in console for curious users)
+        console.log('%c' + APP_CONFIG.name + ' v' + APP_CONFIG.version, 'font-size: 14px; font-weight: bold; color: #0066cc;');
+        console.log('Security: All user inputs are sanitized client-side.');
+        console.log('Note: URL parameters may be used for personalization features.');
+
+        // Random hint system
+        const hints = [
+            "Modern web apps often use URL parameters for state management.",
+            "Client-side routing can use hash fragments (#section).",
+            "Different URL components: pathname, search (?), hash (#).",
+            "Some DOM methods are safer than others for inserting content.",
+            "HTML parsing happens automatically with certain JavaScript APIs."
+        ];
+        console.log('%c💡 Pro Tip: ' + hints[Math.floor(Math.random() * hints.length)], 'color: #888; font-style: italic;');
+    </script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏢 SecureApp User Portal</h1>
+            <p class="tagline">Your secure gateway to our services</p>
+        </header>
+
+        <nav>
+            <a href="index.html" class="active">Home</a>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="#" onclick="showHelp(); return false;">Help</a>
+        </nav>
+
+        <main>
+            <section class="welcome">
+                <h2>Welcome to SecureApp!</h2>
+                <p>This portal provides secure access to your account and preferences.</p>
+            </section>
+
+            <section class="features">
+                <h3>Available Features</h3>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>👤 Personalized Dashboard</h4>
+                        <p>Access your customized dashboard with user-specific content.</p>
+                        <a href="dashboard.html" class="btn">Open Dashboard</a>
+                    </div>
+                    <div class="feature-card">
+                        <h4>⚙️ Quick Settings</h4>
+                        <p>Configure your preferences and application settings.</p>
+                        <a href="dashboard.html#settings" class="btn">Settings</a>
+                    </div>
+                    <div class="feature-card">
+                        <h4>📊 Analytics</h4>
+                        <p>View your usage statistics and activity reports.</p>
+                        <a href="dashboard.html#analytics" class="btn">View Stats</a>
+                    </div>
+                </div>
+            </section>
+
+            <section class="info-box">
+                <h3>📖 How to Use</h3>
+                <ol>
+                    <li>Navigate to the <strong>Dashboard</strong> to access your personalized content</li>
+                    <li>Use URL parameters for quick access to specific sections</li>
+                    <li>Bookmark your favorite views for easy access</li>
+                </ol>
+                <p class="note">
+                    <strong>Note:</strong> This application uses client-side routing for improved performance.
+                    Your preferences may be stored in the URL for convenience.
+                </p>
+            </section>
+
+            <!-- Hidden clues for observant users -->
+            <!--
+            ========================================================================
+            DEVELOPER NOTES - URL PARAMETER HANDLING
+            ========================================================================
+
+            Dashboard URL Structure:
+            ------------------------
+            Standard: dashboard.html
+            With user param: dashboard.html?user=username
+            With section: dashboard.html#section
+
+            DOM Processing:
+            ---------------
+            The dashboard reads URL parameters client-side using:
+            - document.location.search (query string)
+            - document.location.hash (hash fragment)
+            - document.location.pathname (path)
+
+            Security Notes:
+            ---------------
+            - User input is validated before DOM insertion
+            - HTML sanitization is applied where appropriate
+            - Legacy components may have different validation rules
+
+            Historical Context:
+            -------------------
+            Some older parts of the codebase use innerHTML for performance reasons.
+            These are scheduled for refactoring but remain in production.
+
+            Remember: Client-side validation can be bypassed by modifying the URL
+            directly in the browser address bar.
+
+            ========================================================================
+            -->
+
+            <section class="tips">
+                <h3>💡 Advanced Usage</h3>
+                <ul class="tips-list">
+                    <li>You can bookmark specific dashboard views for quick access</li>
+                    <li>The hash portion of the URL (#section) is used for navigation</li>
+                    <li>Some features support direct URL parameter configuration</li>
+                    <li>Try accessing different sections using URL fragments</li>
+                </ul>
+            </section>
+
+            <section class="security-notice">
+                <h3>🔒 Security Information</h3>
+                <p>This application implements multiple layers of security:</p>
+                <ul>
+                    <li>Content Security Policy headers</li>
+                    <li>Input validation and sanitization</li>
+                    <li>Secure session management</li>
+                    <li>Output encoding for user-generated content</li>
+                </ul>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2024 SecureApp Inc. All rights reserved.</p>
+            <p class="version">Version 3.2.1 | Last updated: 2024-01-15</p>
+        </footer>
+    </div>
+
+    <script>
+        function showHelp() {
+            alert('SecureApp Help:\n\n1. Navigate using the menu above\n2. Use Dashboard for personalized content\n3. URL parameters can be used for quick access\n\nExample:\ndashboard.html?user=yourname');
+        }
+
+        // Easter egg for curious minds
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('%c DOM Tip:', 'background: #222; color: #bada55; padding: 3px;', 'The URL hash fragment (#) is often used for client-side routing and can contain user data.');
+
+            // More hints about the vulnerability
+            const urlTips = [
+                "document.location.hash contains everything after #",
+                "document.location.search contains everything after ?",
+                "innerHTML parses HTML, textContent does not",
+                "Some validation functions only check specific characters"
+            ];
+            console.log('%c URL Tip: ' + urlTips[Math.floor(Math.random() * urlTips.length)], 'color: #666;');
+        });
+
+        // Track page load (educational - shows what info is available)
+        const pageInfo = {
+            href: window.location.href,
+            pathname: window.location.pathname,
+            search: window.location.search,
+            hash: window.location.hash
+        };
+        console.log('Page info:', pageInfo);
+    </script>
+
+    <!--
+    ========================================================================
+    DEBUG INFORMATION (Remove in production)
+    ========================================================================
+
+    Dashboard Features:
+    -------------------
+    - User greeting based on URL parameter ?user=
+    - Section navigation via hash #section
+    - Dynamic content loading
+
+    Known Issues:
+    -------------
+    - Legacy innerHTML usage in dashboard (TODO: migrate to createElement)
+    - Some URL components not fully validated
+    - Hash-based routing may accept unexpected input
+
+    For testing purposes, try:
+    - dashboard.html?user=Admin
+    - dashboard.html#profile
+    - dashboard.html?user=Admin#profile
+
+    ========================================================================
+    -->
+</body>
+</html>

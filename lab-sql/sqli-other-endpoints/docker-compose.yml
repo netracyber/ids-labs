@@ -1,0 +1,12 @@
+# Docker Compose untuk SQL Injection CTF Lab (Other Endpoints)
+# Aplikasi SQL Injection dengan endpoint selain login, flag static
+services:
+  sqli-other-endpoints:
+    build: .
+    ports:
+      - "5002:5000"
+    restart: unless-stopped
+    # Volume untuk menyimpan flag secara persisten (opsional)
+    # Uncomment baris berikut jika Anda ingin menyimpan flag secara persisten
+    # volumes:
+    #   - ./current_flag.txt:/app/current_flag.txt

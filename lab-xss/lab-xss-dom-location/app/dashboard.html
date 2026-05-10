@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | SecureApp</title>
+    <link rel="stylesheet" href="style.css">
+    <script>
+        // Flag storage - only accessible through successful XSS
+        // Static flag for this lab
+        var USER_FLAG = 'IDS{2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7}';
+    </script>
+    <?php
+    // Static flag for this lab
+    $flag = "IDS{2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7}";
+    ?>
+    <script>
+        // Store flag in JavaScript variable (accessible only if XSS works)
+        USER_FLAG = "<?php echo $flag; ?>";
+
+        // Application configuration
+        const DASHBOARD_CONFIG = {
+            defaultUser: 'Guest',
+            theme: 'light',
+            // Supported URL parameters
+            params: {
+                USER: 'user',
+                SECTION: 'section',
+                VIEW: 'view',
+                THEME: 'theme'
+            }
+        };
+
+        console.log('Dashboard loaded. Config:', DASHBOARD_CONFIG);
+    </script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 User Dashboard</h1>
+            <p class="tagline">Your personalized command center</p>
+        </header>
+
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="dashboard.html" class="active">Dashboard</a>
+            <a href="#" onclick="showHelp(); return false;">Help</a>
+        </nav>
+
+        <main>
+            <!-- User greeting section - VULNERABLE POINT 1 -->
+            <section class="user-welcome">
+                <div id="welcome-message">
+                    <p>Welcome, <span id="user-display">Guest</span>!</p>
+                </div>
+                <p class="date" id="current-date"></p>
+            </section>
+
+            <!-- Dynamic content area - VULNERABLE POINT 2 -->
+            <section class="dynamic-content">
+                <h3>Quick Access</h3>
+                <div id="content-area">
+                    <p>Select an option from the menu below.</p>
+                </div>
+            </section>
+
+            <!-- Navigation hints -->
+            <section class="section-nav">
+                <h3>Available Sections</h3>
+                <div class="nav-grid">
+                    <a href="#profile" class="nav-item">👤 Profile</a>
+                    <a href="#settings" class="nav-item">⚙️ Settings</a>
+                    <a href="#analytics" class="nav-item">📈 Analytics</a>
+                    <a href="#messages" class="nav-item">✉️ Messages</a>
+                </div>
+            </section>
+
+            <!-- Info about URL parameters -->
+            <section class="url-params-info">
+                <h3>🔗 URL Parameter Features</h3>
+                <div class="info-content">
+                    <p>You can customize your dashboard experience using URL parameters:</p>
+                    <ul class="params-list">
+                        <li><code>?user=YourName</code> - Set your display name</li>
+                        <li><code>#section</code> - Jump to a specific section</li>
+                        <li><code>?theme=dark</code> - Switch theme (coming soon)</li>
+                    </ul>
+                    <p class="example">
+                        <strong>Example:</strong> <code>dashboard.html?user=Admin#profile</code>
+                    </p>
+                </div>
+            </section>
+
+            <!-- Hidden clues -->
+            <!--
+            ========================================================================
+            DASHBOARD DEVELOPMENT NOTES
+            ========================================================================
+
+            URL Parameter Processing:
+            -------------------------
+            The dashboard processes URL parameters client-side for instant feedback.
+
+            Code locations to review:
+            - processUserParam() - Handles ?user= parameter
+            - processHashParam() - Handles #hash fragment
+            - updateContent() - Updates DOM with user content
+
+            Security Measures:
+            -------------------
+            1. Basic input validation (blocks <script> tags)
+            2. Length restrictions on user input
+            3. Character filtering for dangerous patterns
+
+            Known Limitations:
+            -------------------
+            - innerHTML used for performance (TODO: refactor to createElement)
+            - Hash fragment processing uses minimal validation
+            - URL decoding happens before validation in some paths
+
+            Bypass Possibilities:
+            ---------------------
+            - Alternative event handlers (onload, onerror, etc.)
+            - HTML5 elements with interesting attributes
+            - Encoding tricks (URL encoding, HTML entities)
+            - Using hash fragment (#) instead of query string (?)
+
+            Remember: The browser decodes URL encoding before JavaScript sees it.
+            What you see in document.location is already URL-decoded!
+
+            ========================================================================
+            -->
+
+            <section class="debug-info">
+                <h3>🔧 Developer Options</h3>
+                <p>For testing and development, you can:</p>
+                <ul>
+                    <li>Modify URL parameters directly in the address bar</li>
+                    <li>Use browser DevTools to inspect JavaScript behavior</li>
+                    <li>Check the Console for debugging output</li>
+                </ul>
+                <p class="warning">
+                    ⚠️ These features are for authorized testing only!
+                </p>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2024 SecureApp Inc. All rights reserved.</p>
+            <p class="version">Dashboard v2.4.0 | Client-side routing enabled</p>
+        </footer>
+    </div>
+
+    <script>
+        // ============================================================================
+        // DOM-based XSS Vulnerability
+        // ============================================================================
+        // The following code reads from document.location and uses innerHTML
+        // This creates a DOM-based XSS vulnerability
+        // ============================================================================
+
+        // Utility function to get URL parameters
+        function getUrlParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        // Basic validation function (can be bypassed)
+        function validateInput(input) {
+            // Very basic filtering - blocks exact matches of common patterns
+            const blockedPatterns = [
+                '<script>',
+                '</script>',
+                'javascript:',
+                'onerror=',
+                'onload='
+            ];
+
+            let sanitized = input;
+            for (let pattern of blockedPatterns) {
+                // Case-sensitive replacement only
+                sanitized = sanitized.split(pattern).join('');
+            }
+
+            return sanitized;
+        }
+
+        // Process user parameter from URL query string
+        function processUserParam() {
+            const userParam = getUrlParameter('user');
+            const userDisplay = document.getElementById('user-display');
+
+            if (userParam) {
+                // Apply basic validation
+                const safeUser = validateInput(userParam);
+                // VULNERABLE: Using innerHTML with user input
+                userDisplay.innerHTML = safeUser;
+                console.log('User parameter processed:', safeUser);
+            }
+        }
+
+        // Process hash fragment for section navigation
+        function processHashParam() {
+            const hash = window.location.hash.substring(1); // Remove the #
+            const contentArea = document.getElementById('content-area');
+
+            if (hash) {
+                // VULNERABLE: Using innerHTML with hash content
+                // Minimal validation on hash - just basic length check
+                const displayHash = hash.length > 100 ? hash.substring(0, 100) : hash;
+
+                // Different sections show different content
+                const sections = {
+                    'profile': '<h4>👤 User Profile</h4><p>Welcome to your profile section, <strong>' + displayHash + '</strong>!</p>',
+                    'settings': '<h4>⚙️ Settings</h4><p>Configure your preferences for <em>' + displayHash + '</em></p>',
+                    'analytics': '<h4>📈 Analytics</h4><p>Viewing analytics for: ' + displayHash + '</p>',
+                    'messages': '<h4>✉️ Messages</h4><p>You have messages from: ' + displayHash + '</p>'
+                };
+
+                if (sections[hash]) {
+                    contentArea.innerHTML = sections[hash];
+                } else {
+                    // Custom hash content - more permissive here
+                    contentArea.innerHTML = '<h4>📌 Section: ' + displayHash + '</h4><p>Navigating to custom section...</p>';
+                }
+
+                console.log('Hash parameter processed:', displayHash);
+            }
+        }
+
+        // Alternative vulnerable function - for direct hash content injection
+        function processDirectHash() {
+            const hash = window.location.hash;
+
+            // Check if hash contains custom content marker
+            if (hash.includes('content=')) {
+                const content = hash.split('content=')[1];
+                const contentArea = document.getElementById('content-area');
+
+                if (content) {
+                    // VULNERABLE: Direct innerHTML with minimal filtering
+                    // Only filters exact <script> tags (case-sensitive)
+                    const safeContent = validateInput(content);
+                    contentArea.innerHTML = safeContent;
+                    console.log('Direct content loaded:', safeContent);
+                }
+            }
+        }
+
+        // Set current date
+        function setCurrentDate() {
+            const dateEl = document.getElementById('current-date');
+            const now = new Date();
+            dateEl.textContent = 'Last login: ' + now.toLocaleString();
+        }
+
+        // Show help dialog
+        function showHelp() {
+            alert('Dashboard Help:\n\n1. Use ?user=YourName to personalize\n2. Use #section for navigation\n3. Use #content=HTML for custom content\n\nExample:\ndashboard.html?user=Admin#content=<h1>Hello</h1>');
+        }
+
+        // Validate XSS exploit and show flag
+        function validateXSS() {
+            // This function is called when XSS is successful
+            alert('Congratulations! DOM-based XSS Flag: ' + USER_FLAG);
+            return USER_FLAG;
+        }
+
+        // Initialize dashboard
+        function initDashboard() {
+            console.log('Initializing dashboard...');
+            console.log('Location:', window.location.href);
+            console.log('Search:', window.location.search);
+            console.log('Hash:', window.location.hash);
+
+            // Process URL parameters
+            processUserParam();
+            processHashParam();
+            processDirectHash();
+
+            // Set date
+            setCurrentDate();
+
+            console.log('%c Dashboard initialized', 'color: green; font-weight: bold;');
+        }
+
+        // Run on page load
+        document.addEventListener('DOMContentLoaded', initDashboard);
+
+        // Console hints for curious users
+        console.log('%c=== DASHBOARD DEBUG INFO ===', 'font-weight: bold; color: #0066cc;');
+        console.log('Available parameters:');
+        console.log('  - ?user=NAME (query string)');
+        console.log('  - #section (hash navigation)');
+        console.log('  - #content=HTML (custom HTML content)');
+        console.log('');
+        console.log('Functions to examine:');
+        console.log('  - processUserParam()');
+        console.log('  - processHashParam()');
+        console.log('  - processDirectHash()');
+        console.log('  - validateInput()');
+        console.log('');
+        console.log('%c Tip: The hash fragment (#) has less strict validation!', 'color: orange; font-weight: bold;');
+
+        // Random security tip
+        const securityTips = [
+            "innerHTML parses and renders HTML tags - use textContent for plain text",
+            "URL encoding is decoded by the browser before JavaScript sees it",
+            "Event handlers like onload, onerror can execute JavaScript",
+            "Some filters are case-sensitive - try different cases",
+            "HTML5 has many elements: svg, details, marquee, body, etc."
+        ];
+        console.log('%c💡 Security Tip: ' + securityTips[Math.floor(Math.random() * securityTips.length)], 'color: #888; font-style: italic;');
+    </script>
+
+    <!--
+    ========================================================================
+    VULNERABILITY DETAILS
+    ========================================================================
+
+    DOM-based XSS Vulnerabilities in this page:
+    -------------------------------------------
+
+    1. processUserParam() - Line ~330
+       Source: document.location.search (?user=)
+       Sink: innerHTML
+       Validation: Weak (case-sensitive string replacement)
+
+    2. processHashParam() - Line ~350
+       Source: document.location.hash (#section)
+       Sink: innerHTML
+       Validation: Minimal (only length check)
+
+    3. processDirectHash() - Line ~370
+       Source: document.location.hash (#content=)
+       Sink: innerHTML
+       Validation: Weak (same as processUserParam)
+
+    Bypass Techniques:
+    ------------------
+    - Case variation: OnError, ONLOAD (instead of onerror, onload)
+    - Alternative tags: <svg onload=...>, <img src=x onerror=...>
+    - HTML entities in URL (browser decodes before JS sees it)
+    - Different event handlers: ontoggle, onbegin, onend
+
+    Example Exploits:
+    -----------------
+    1. dashboard.html?user=<img src=x OnError=alert(1)>
+    2. dashboard.html#content=<svg OnLoad=alert(1)>
+    3. dashboard.html#content=<details open ontoggle=alert(1)>
+
+    To get the flag:
+    ----------------
+    Call validateXSS() function through your XSS payload:
+    ?user=<img src=x OnError=validateXSS()>
+
+    ========================================================================
+    -->
+</body>
+</html>

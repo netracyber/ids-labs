@@ -1,0 +1,6 @@
+Name:
+SQL Injection Other Endpoints
+Category:
+SQLi
+Message:
+Akses lab di http://localhost:5002. Gunakan payload SQL injection di berbagai endpoint seperti /search, /user, dan /category untuk mendapatkan flag.

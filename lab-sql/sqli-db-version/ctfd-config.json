@@ -1,0 +1,30 @@
+{
+    "name": "SQL Injection - Database Version Query",
+    "category": "Web Exploitation",
+    "description": "Exploit a SQL injection vulnerability to query database type and version and obtain the flag.",
+    "value": 200,
+    "flags": [
+        {
+            "type": "static",
+            "content": "IDS{d9e8f7g6h5i4j3k2l1m0n9o8p7q6r5s4}",
+            "data": ""
+        }
+    ],
+    "tags": [
+        "SQLi",
+        "Web",
+        "Injection",
+        "Database Version"
+    ],
+    "files": [],
+    "hints": [
+        {
+            "cost": 25,
+            "content": "Look for parameters that filter or query data."
+        },
+        {
+            "cost": 50,
+            "content": "Try using UNION SELECT with database version functions."
+        }
+    ]
+}

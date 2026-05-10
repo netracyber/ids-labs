@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  tracking-service:
+    build: .
+    container_name: tracking-service
+    ports:
+      - "8079:8080"
+    volumes:
+      - tracking-data:/data
+    restart: unless-stopped
+    networks:
+      - tracking-network
+
+volumes:
+  tracking-data:
+
+networks:
+  tracking-network:
+    driver: bridge
+    name: tracking-network

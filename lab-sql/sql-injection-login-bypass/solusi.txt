@@ -1,0 +1,14 @@
+# Solusi Lab: SQL Injection Login Bypass (Port 5001)
+
+## Cara Mendapatkan Flag:
+
+1. Akses aplikasi di http://localhost:5001
+2. Pada form login, masukkan payload SQL injection pada salah satu field (username atau password)
+3. Contoh payload umum untuk login bypass:
+   - Username: admin' --
+   - Password: apapun
+   Atau
+   - Username: admin' #
+   - Password: apapun
+4. Submit form untuk melewati otentikasi
+5. Setelah berhasil login, cari flag di halaman dashboard atau halaman lain yang terbuka

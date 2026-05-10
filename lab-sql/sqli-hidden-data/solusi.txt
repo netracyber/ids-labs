@@ -1,0 +1,12 @@
+# Solusi Lab: SQL Injection Hidden Data (Port 5003)
+
+## Cara Mendapatkan Flag:
+
+1. Akses aplikasi di http://localhost:5003
+2. Cari fitur yang menampilkan data (seperti daftar produk, artikel, pengguna, dll)
+3. Uji parameter pada fitur tersebut untuk SQL injection
+4. Gunakan teknik UNION-based SQL injection untuk mengambil data tersembunyi
+5. Contoh payload:
+   - Parameter: id=1 UNION SELECT flag,2 FROM flags --
+   - Parameter: id=1 UNION SELECT table_name,column_name FROM information_schema.columns --
+6. Eksploitasi untuk mengungkap data tersembunyi termasuk flag

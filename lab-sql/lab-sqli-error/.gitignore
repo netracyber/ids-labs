@@ -1,0 +1,26 @@
+# Ignore database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Ignore flag files
+*.txt
+database/flag.txt
+database/current_flag.txt
+
+# Ignore Docker volumes
+database/
+
+# Ignore IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
+
+# Ignore logs
+*.log

@@ -1,0 +1,30 @@
+{
+    "name": "SQL Injection - Other Endpoints",
+    "category": "Web Exploitation",
+    "description": "Temukan celah SQL Injection pada berbagai endpoint aplikasi selain login dan dapatkan flag yang valid.",
+    "value": 200,
+    "flags": [
+        {
+            "type": "static",
+            "content": "IDS{f0e9d8c7b6a5g4f3e2d1c0b9a8g7f6e5d}",
+            "data": ""
+        }
+    ],
+    "tags": [
+        "SQLi",
+        "Web",
+        "Injection",
+        "Endpoints"
+    ],
+    "files": [],
+    "hints": [
+        {
+            "cost": 25,
+            "content": "Coba eksploitasi berbagai endpoint yang tersedia, bukan hanya login."
+        },
+        {
+            "cost": 50,
+            "content": "Gunakan payload seperti: ' OR '1'='1 di berbagai parameter input"
+        }
+    ]
+}

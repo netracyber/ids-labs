@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  lab-xss-js-string:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      # Fixed port mapping
+      - "8037:80"
+    volumes:
+      - ./app:/var/www/html
+      - /home/labuser/tools/generate_flag.py:/usr/local/bin/generate_flag.py:ro
+    environment:
+      - FLAG_GENERATOR=/usr/local/bin/generate_flag.py
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    networks:
+      - tracking-network
+    extra_hosts:
+      - "tracking-service:host-gateway"
+
+networks:
+  tracking-network:
+    external: true

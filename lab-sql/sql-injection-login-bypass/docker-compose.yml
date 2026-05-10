@@ -1,0 +1,8 @@
+# Docker Compose untuk SQL Injection Login Bypass CTF Lab
+# Aplikasi SQL Injection dengan flag statis
+services:
+  sqli-lab:
+    build: .
+    ports:
+      - "5001:5000"
+    restart: unless-stopped

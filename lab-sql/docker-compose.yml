@@ -1,0 +1,136 @@
+version: '3.8'
+
+# Main Docker Compose untuk SQL Injection Labs
+# Semua lab berjalan dalam container terpisah dengan port berbeda
+
+services:
+  # Lab 1: SQL Injection Login Bypass
+  sqli-login-bypass:
+    build: ./sql-injection-login-bypass
+    container_name: sqli-login-bypass
+    ports:
+      - "5001:5000"
+    restart: unless-stopped
+
+  # Lab 2: SQL Injection Other Endpoints
+  sqli-other-endpoints:
+    build: ./sqli-other-endpoints
+    container_name: sqli-other-endpoints
+    ports:
+      - "5002:5000"
+    restart: unless-stopped
+
+  # Lab 3: SQL Injection Hidden Data
+  sqli-hidden-data:
+    build: ./sqli-hidden-data
+    container_name: sqli-hidden-data
+    ports:
+      - "5003:5000"
+    restart: unless-stopped
+
+  # Lab 4: Oracle Version Lab
+  oracle-version-lab:
+    build: ./oracle-version-lab
+    container_name: oracle-version-lab
+    ports:
+      - "5005:5005"
+    restart: unless-stopped
+
+  # Lab 5: SQL Injection DB Version
+  sqli-db-version:
+    build: ./sqli-db-version
+    container_name: sqli-db-version
+    ports:
+      - "5006:5000"
+    restart: unless-stopped
+
+  # Lab 6: SQL Injection Oracle Enum
+  # Menggunakan database Oracle XE
+  oracle-db:
+    image: gvenzl/oracle-xe:21-slim
+    container_name: oracle-xe-enum
+    environment:
+      ORACLE_PASSWORD: oracle
+      APP_USER: system
+      APP_USER_PASSWORD: oracle
+    ports:
+      - "1527:1521"
+    healthcheck:
+      test: ["CMD", "sqlplus", "-s", "system/oracle@//localhost:1521/XE", "as", "sysdba", "<<<", "SELECT 1 FROM DUAL;"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - ./sqli-oracle-enum/setup_db.sql:/container-entrypoint-initdb.d/setup_db.sql
+    restart: unless-stopped
+
+  sqli-oracle-enum:
+    build: ./sqli-oracle-enum
+    container_name: sqli-oracle-enum
+    ports:
+      - "5007:5000"
+    environment:
+      - DB_HOST=oracle-db
+      - DB_PORT=1521
+      - DB_NAME=XE
+      - DB_USER=system
+      - DB_PASSWORD=oracle
+    depends_on:
+      oracle-db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Lab 7: SQL Injection Lab (Complete Login System)
+  sql-injection-lab:
+    build: ./SQL-Injection-Lab
+    container_name: sql-injection-lab
+    ports:
+      - "6003:6003"
+    restart: unless-stopped
+
+  # ==========================================
+  # Pentest Articles Platform
+  # ==========================================
+
+  # MySQL Database for Articles
+  articles-mysql:
+    image: mysql:8.0
+    container_name: articles-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: pentest_articles
+      MYSQL_CHARSET: utf8mb4
+      MYSQL_COLLATION: utf8mb4_unicode_ci
+    volumes:
+      - articles_mysql_data:/var/lib/mysql
+      - ./articles/database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-prootpassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  # Articles Platform PHP Application
+  articles-app:
+    build:
+      context: ./articles
+      dockerfile: docker/Dockerfile
+    container_name: articles-app
+    ports:
+      - "8083:80"
+    environment:
+      - DB_HOST=articles-mysql
+      - DB_NAME=pentest_articles
+      - DB_USER=root
+      - DB_PASS=rootpassword
+      - APP_ENV=development
+    volumes:
+      - ./articles:/var/www/html
+    depends_on:
+      articles-mysql:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  articles_mysql_data:

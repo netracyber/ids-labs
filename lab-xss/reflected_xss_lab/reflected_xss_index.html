@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Security Academy Labs</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .lab {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            border-left: 4px solid #007bff;
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .instructions {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Web Security Academy Labs</h1>
+        
+        <div class="lab">
+            <h2>Reflected XSS Lab</h2>
+            <p>This lab contains a simple reflected cross-site scripting vulnerability in the search functionality.</p>
+            <p><a href="search.php">Access Reflected XSS Lab</a></p>
+        </div>
+        
+        <div class="lab">
+            <h2>Stored XSS Lab</h2>
+            <p>This lab contains a stored cross-site scripting vulnerability in the comment functionality.</p>
+            <p><a href="blog_post.php">Access Stored XSS Lab</a></p>
+        </div>
+        
+        <div class="instructions">
+            <h3>Lab Instructions:</h3>
+            <p>For the Stored XSS Lab: Submit a comment that calls the <code>alert</code> function when the blog post is viewed.</p>
+            <p>Flag: IDS{1c8a5c15517d898e873a11dd32a19fa4}</p>
+        </div>
+    </div>
+</body>
+</html>

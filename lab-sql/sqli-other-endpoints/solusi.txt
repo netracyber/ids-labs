@@ -1,0 +1,17 @@
+# Solusi Lab: SQL Injection Other Endpoints (Port 5002)
+
+## Cara Mendapatkan Flag:
+
+1. Akses aplikasi di http://localhost:5002
+2. Cari endpoint lain selain login yang mungkin rentan terhadap SQL injection
+3. Endpoint umum yang perlu diuji:
+   - /search
+   - /view
+   - /id
+   - /user
+   - dll
+4. Uji parameter pada endpoint tersebut dengan payload SQL injection
+5. Contoh payload:
+   - Parameter: id=1' OR '1'='1' --
+   - Parameter: search=test' UNION SELECT flag,2,3 FROM flags --
+6. Eksploitasi endpoint yang rentan untuk mendapatkan flag

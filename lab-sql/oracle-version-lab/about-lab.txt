@@ -1,0 +1,6 @@
+Name:
+Oracle Version SQL Injection
+Category:
+SQLi
+Message:
+Akses lab di http://localhost:5005. Gunakan payload SQL injection UNION untuk mendapatkan versi database Oracle.

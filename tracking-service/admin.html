@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Lab Management</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: #0a0a1a;
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+
+        /* Login Gate */
+        .login-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: #0a0a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .login-overlay.hidden { display: none; }
+        .login-box {
+            background: rgba(17,17,35,0.95);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 40px;
+            width: 400px;
+            max-width: 90vw;
+        }
+        .login-box h2 {
+            font-size: 1.4em;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .login-box p {
+            color: #6b7280;
+            font-size: 0.85em;
+            margin-bottom: 24px;
+        }
+        .login-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: #e0e0e0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9em;
+            margin-bottom: 16px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .login-input:focus { border-color: rgba(99,102,241,0.5); }
+        .login-error {
+            color: #ef4444;
+            font-size: 0.8em;
+            margin-bottom: 12px;
+            display: none;
+        }
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.95em;
+            transition: opacity 0.2s;
+        }
+        .login-btn:hover { opacity: 0.9; }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            padding: 40px 20px 30px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            position: relative;
+        }
+        .header h1 {
+            font-size: 1.8em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #818cf8, #c084fc, #f472b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 4px;
+        }
+        .header p { color: #9ca3af; font-size: 0.9em; }
+        .header-actions {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            display: flex;
+            gap: 8px;
+        }
+        .header-btn {
+            padding: 8px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.78em;
+            font-weight: 500;
+            border: 1px solid;
+            background: transparent;
+        }
+        .btn-token { color: #f59e0b; border-color: rgba(245,158,11,0.3); }
+        .btn-token:hover { background: rgba(245,158,11,0.1); }
+        .btn-logout { color: #ef4444; border-color: rgba(239,68,68,0.3); }
+        .btn-logout:hover { background: rgba(239,68,68,0.15); }
+
+        /* Stats */
+        .stats-bar {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            padding: 16px 20px;
+            background: rgba(15,15,30,0.8);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .stat { text-align: center; }
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: 700;
+        }
+        .stat-value.total { color: #818cf8; }
+        .stat-value.published { color: #10b981; }
+        .stat-value.draft { color: #f59e0b; }
+        .stat-label {
+            font-size: 0.7em;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Main */
+        .main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Category Group */
+        .category-group {
+            margin-bottom: 32px;
+        }
+        .category-group-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .cat-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9em;
+            font-weight: 700;
+            color: #fff;
+        }
+        .cat-name {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #f3f4f6;
+        }
+        .cat-count {
+            background: rgba(99,102,241,0.12);
+            color: #818cf8;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 500;
+        }
+
+        /* Lab Table */
+        .lab-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .lab-table th {
+            text-align: left;
+            padding: 8px 12px;
+            font-size: 0.7em;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .lab-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            font-size: 0.85em;
+        }
+        .lab-table tr:hover td {
+            background: rgba(99,102,241,0.03);
+        }
+        .lab-table .lab-name {
+            font-weight: 500;
+            color: #f3f4f6;
+        }
+        .lab-table .lab-port {
+            font-family: 'JetBrains Mono', monospace;
+            color: #6366f1;
+            font-size: 0.85em;
+        }
+        .lab-table .lab-diff {
+            font-size: 0.75em;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        /* Toggle Switch - fixed version */
+        .toggle-switch {
+            position: relative;
+            width: 48px;
+            height: 26px;
+            cursor: pointer;
+            display: inline-block;
+        }
+        .toggle-switch input {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            opacity: 0;
+            cursor: pointer;
+            margin: 0;
+            z-index: 2;
+        }
+        .toggle-track {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255,255,255,0.1);
+            border-radius: 26px;
+            transition: background 0.3s;
+        }
+        .toggle-track::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #6b7280;
+            top: 3px;
+            left: 3px;
+            transition: transform 0.3s, background 0.3s;
+        }
+        .toggle-switch input:checked ~ .toggle-track {
+            background: rgba(16,185,129,0.3);
+        }
+        .toggle-switch input:checked ~ .toggle-track::after {
+            transform: translateX(22px);
+            background: #10b981;
+        }
+        .toggle-switch.saving .toggle-track::after {
+            opacity: 0.4;
+        }
+
+        /* Status */
+        .status-published { color: #10b981; font-size: 0.75em; font-weight: 600; }
+        .status-draft { color: #f59e0b; font-size: 0.75em; font-weight: 600; }
+
+        /* Toast */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .toast {
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 0.85em;
+            font-weight: 500;
+            animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s forwards;
+            max-width: 320px;
+        }
+        .toast-success { background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.3); }
+        .toast-error { background: rgba(239,68,68,0.15); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
+        .toast-info { background: rgba(99,102,241,0.15); color: #818cf8; border: 1px solid rgba(99,102,241,0.3); }
+        @keyframes slideIn { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes fadeOut { to { opacity: 0; transform: translateY(-10px); } }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        .modal-overlay.hidden { display: none; }
+        .modal-box {
+            background: #111123;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 32px;
+            width: 420px;
+            max-width: 90vw;
+        }
+        .modal-box h3 {
+            color: #f59e0b;
+            margin-bottom: 12px;
+            font-size: 1.1em;
+        }
+        .modal-box p {
+            color: #9ca3af;
+            font-size: 0.8em;
+            margin-bottom: 16px;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .modal-actions button {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.85em;
+            border: none;
+        }
+        .btn-cancel { background: rgba(255,255,255,0.05); color: #9ca3af; }
+        .btn-cancel:hover { background: rgba(255,255,255,0.1); }
+        .btn-save { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; }
+        .btn-save:hover { opacity: 0.9; }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 30px 20px;
+            color: #4b5563;
+            font-size: 0.8em;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            margin-top: 20px;
+        }
+
+        .loading-spinner {
+            text-align: center;
+            padding: 60px;
+            color: #6b7280;
+        }
+
+        @media (max-width: 768px) {
+            .stats-bar { gap: 16px; flex-wrap: wrap; }
+            .lab-table { font-size: 0.8em; }
+            .lab-table th:nth-child(3),
+            .lab-table td:nth-child(3) { display: none; }
+            .header-actions { position: static; justify-content: center; padding: 12px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Token Modal -->
+    <div class="modal-overlay hidden" id="tokenModal">
+        <div class="modal-box">
+            <h3>Change Admin Token</h3>
+            <p>Enter a new admin token. You will need to re-login.</p>
+            <input type="text" class="login-input" id="newTokenInput" placeholder="New admin token">
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="document.getElementById('tokenModal').classList.add('hidden')">Cancel</button>
+                <button class="btn-save" id="saveTokenBtn">Save & Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Gate -->
+    <div class="login-overlay" id="loginOverlay">
+        <div class="login-box">
+            <h2>Admin Access</h2>
+            <p>Enter admin token to manage labs</p>
+            <input type="password" class="login-input" id="tokenInput" placeholder="Admin token" autofocus>
+            <div class="login-error" id="loginError">Invalid token</div>
+            <button class="login-btn" id="loginBtn">Authenticate</button>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div class="header">
+        <h1>Lab Management</h1>
+        <p>Publish / Draft toggle for IDS Cybersecurity Labs</p>
+        <div class="header-actions">
+            <button class="header-btn btn-token" id="tokenBtn">Change Token</button>
+            <button class="header-btn btn-logout" id="logoutBtn">Logout</button>
+        </div>
+    </div>
+
+    <div class="stats-bar" id="statsBar">
+        <div class="stat">
+            <div class="stat-value total" id="totalCount">-</div>
+            <div class="stat-label">Total</div>
+        </div>
+        <div class="stat">
+            <div class="stat-value published" id="publishedCount">-</div>
+            <div class="stat-label">Published</div>
+        </div>
+        <div class="stat">
+            <div class="stat-value draft" id="draftCount">-</div>
+            <div class="stat-label">Draft</div>
+        </div>
+    </div>
+
+    <div class="main" id="labContainer">
+        <div class="loading-spinner">Loading labs...</div>
+    </div>
+
+    <div class="footer">
+        <p>IDS Cybersecurity Lab Admin Panel</p>
+    </div>
+
+    <script>
+        var API = window.location.origin;
+        var adminToken = localStorage.getItem('admin_token') || '';
+        var labsData = null;
+
+        // --- Toast ---
+        function showToast(message, type) {
+            var container = document.getElementById('toastContainer');
+            var toast = document.createElement('div');
+            toast.className = 'toast toast-' + (type || 'info');
+            toast.textContent = message;
+            container.appendChild(toast);
+            setTimeout(function() {
+                if (toast.parentNode) toast.parentNode.removeChild(toast);
+            }, 3000);
+        }
+
+        // --- Login ---
+        var loginOverlay = document.getElementById('loginOverlay');
+        var tokenInput = document.getElementById('tokenInput');
+        var loginError = document.getElementById('loginError');
+        var loginBtn = document.getElementById('loginBtn');
+
+        function doLogin() {
+            var token = tokenInput.value.trim();
+            if (!token) return;
+            loginError.style.display = 'none';
+            fetch(API + '/api/labs/all', {
+                headers: { 'X-Admin-Token': token }
+            })
+            .then(function(r) {
+                if (!r.ok) throw new Error('unauthorized');
+                return r.json();
+            })
+            .then(function(data) {
+                adminToken = token;
+                localStorage.setItem('admin_token', adminToken);
+                loginOverlay.classList.add('hidden');
+                renderData(data);
+            })
+            .catch(function() {
+                loginError.style.display = 'block';
+                tokenInput.value = '';
+                tokenInput.focus();
+            });
+        }
+
+        loginBtn.addEventListener('click', doLogin);
+        tokenInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') doLogin(); });
+
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            localStorage.removeItem('admin_token');
+            adminToken = '';
+            loginOverlay.classList.remove('hidden');
+            tokenInput.value = '';
+            tokenInput.focus();
+            document.getElementById('labContainer').innerHTML = '<div class="loading-spinner">Loading labs...</div>';
+        });
+
+        // --- Token Change ---
+        document.getElementById('tokenBtn').addEventListener('click', function() {
+            document.getElementById('tokenModal').classList.remove('hidden');
+            document.getElementById('newTokenInput').value = '';
+            document.getElementById('newTokenInput').focus();
+        });
+
+        document.getElementById('saveTokenBtn').addEventListener('click', function() {
+            var newToken = document.getElementById('newTokenInput').value.trim();
+            if (!newToken) {
+                showToast('Token cannot be empty', 'error');
+                return;
+            }
+            adminToken = newToken;
+            localStorage.setItem('admin_token', adminToken);
+            document.getElementById('tokenModal').classList.add('hidden');
+            showToast('Token saved! Stored in browser localStorage.', 'success');
+            // Note: actual server-side token is changed via ADMIN_TOKEN env var
+        });
+
+        // --- Load ---
+        function loadLabs() {
+            fetch(API + '/api/labs/all', {
+                headers: { 'X-Admin-Token': adminToken }
+            })
+            .then(function(r) {
+                if (!r.ok) throw new Error('fetch failed');
+                return r.json();
+            })
+            .then(function(data) {
+                renderData(data);
+            })
+            .catch(function() {
+                document.getElementById('labContainer').innerHTML =
+                    '<div class="loading-spinner">Failed to load labs</div>';
+            });
+        }
+
+        function renderData(data) {
+            labsData = data;
+            document.getElementById('totalCount').textContent = data.total;
+            document.getElementById('publishedCount').textContent = data.published;
+            document.getElementById('draftCount').textContent = data.draft;
+            renderLabs(data.categories);
+        }
+
+        function renderLabs(categories) {
+            var container = document.getElementById('labContainer');
+            container.innerHTML = '';
+
+            for (var c = 0; c < categories.length; c++) {
+                var cat = categories[c];
+
+                var group = document.createElement('div');
+                group.className = 'category-group';
+
+                var headerDiv = document.createElement('div');
+                headerDiv.className = 'category-group-header';
+                headerDiv.innerHTML =
+                    '<div class="cat-icon" style="background:linear-gradient(135deg,' + cat.color_start + ',' + cat.color_end + ')">' + cat.icon + '</div>' +
+                    '<div class="cat-name">' + cat.name + '</div>' +
+                    '<div class="cat-count">' + cat.labs.length + ' labs</div>';
+                group.appendChild(headerDiv);
+
+                var table = document.createElement('table');
+                table.className = 'lab-table';
+
+                var thead = document.createElement('thead');
+                thead.innerHTML = '<tr><th>Name</th><th>Port</th><th>Difficulty</th><th>Status</th><th>Published</th></tr>';
+                table.appendChild(thead);
+
+                var tbody = document.createElement('tbody');
+
+                for (var i = 0; i < cat.labs.length; i++) {
+                    var lab = cat.labs[i];
+                    var row = document.createElement('tr');
+
+                    // Name
+                    var tdName = document.createElement('td');
+                    tdName.className = 'lab-name';
+                    tdName.textContent = lab.name;
+                    row.appendChild(tdName);
+
+                    // Port
+                    var tdPort = document.createElement('td');
+                    tdPort.className = 'lab-port';
+                    tdPort.textContent = '/lab/' + lab.port;
+                    row.appendChild(tdPort);
+
+                    // Difficulty
+                    var tdDiff = document.createElement('td');
+                    var diffSpan = document.createElement('span');
+                    diffSpan.className = 'lab-diff';
+                    var diffColors = {
+                        'Easy': 'background:rgba(16,185,129,0.12);color:#10b981',
+                        'Medium': 'background:rgba(245,158,11,0.12);color:#f59e0b',
+                        'Hard': 'background:rgba(239,68,68,0.12);color:#ef4444',
+                        'Expert': 'background:rgba(220,38,38,0.18);color:#dc2626',
+                        'Advanced': 'background:rgba(239,68,68,0.12);color:#ef4444',
+                        'Running': 'background:rgba(16,185,129,0.12);color:#10b981'
+                    };
+                    diffSpan.setAttribute('style', diffColors[lab.difficulty] || 'background:rgba(107,114,128,0.12);color:#9ca3af');
+                    diffSpan.textContent = lab.difficulty;
+                    tdDiff.appendChild(diffSpan);
+                    row.appendChild(tdDiff);
+
+                    // Status
+                    var tdStatus = document.createElement('td');
+                    var statusSpan = document.createElement('span');
+                    statusSpan.className = lab.published ? 'status-published' : 'status-draft';
+                    statusSpan.textContent = lab.published ? 'Published' : 'Draft';
+                    statusSpan.setAttribute('data-port', lab.port);
+                    tdStatus.appendChild(statusSpan);
+                    row.appendChild(tdStatus);
+
+                    // Toggle
+                    var tdToggle = document.createElement('td');
+                    var label = document.createElement('label');
+                    label.className = 'toggle-switch';
+                    label.setAttribute('data-port', lab.port);
+
+                    var input = document.createElement('input');
+                    input.type = 'checkbox';
+                    input.checked = lab.published;
+                    input.setAttribute('data-port', lab.port);
+
+                    var track = document.createElement('span');
+                    track.className = 'toggle-track';
+
+                    label.appendChild(input);
+                    label.appendChild(track);
+                    tdToggle.appendChild(label);
+                    row.appendChild(tdToggle);
+
+                    // Attach event via addEventListener (more reliable than inline)
+                    (function(p, inp, lbl) {
+                        inp.addEventListener('change', function() {
+                            doToggle(p, inp, lbl);
+                        });
+                    })(lab.port, input, label);
+
+                    tbody.appendChild(row);
+                }
+
+                table.appendChild(tbody);
+                group.appendChild(table);
+                container.appendChild(group);
+            }
+        }
+
+        // --- Toggle ---
+        function doToggle(port, input, label) {
+            label.classList.add('saving');
+            input.disabled = true;
+
+            fetch(API + '/api/labs/toggle', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Admin-Token': adminToken
+                },
+                body: JSON.stringify({ port: port })
+            })
+            .then(function(r) {
+                if (!r.ok) throw new Error('toggle failed');
+                return r.json();
+            })
+            .then(function(data) {
+                label.classList.remove('saving');
+                input.disabled = false;
+
+                // Update status text for this lab
+                var allStatuses = document.querySelectorAll('[data-port="' + port + '"]');
+                for (var i = 0; i < allStatuses.length; i++) {
+                    var el = allStatuses[i];
+                    if (el.tagName === 'SPAN' && (el.classList.contains('status-published') || el.classList.contains('status-draft'))) {
+                        if (data.published) {
+                            el.className = 'status-published';
+                            el.textContent = 'Published';
+                        } else {
+                            el.className = 'status-draft';
+                            el.textContent = 'Draft';
+                        }
+                    }
+                }
+
+                var labName = '';
+                if (labsData) {
+                    for (var c = 0; c < labsData.categories.length; c++) {
+                        for (var j = 0; j < labsData.categories[c].labs.length; j++) {
+                            if (labsData.categories[c].labs[j].port === port) {
+                                labName = labsData.categories[c].labs[j].name;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                showToast(labName + ' -> ' + (data.published ? 'Published' : 'Draft'), 'success');
+                refreshStats();
+            })
+            .catch(function(err) {
+                label.classList.remove('saving');
+                input.disabled = false;
+                input.checked = !input.checked;
+                showToast('Toggle failed!', 'error');
+            });
+        }
+
+        function refreshStats() {
+            fetch(API + '/api/labs/all', {
+                headers: { 'X-Admin-Token': adminToken }
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                document.getElementById('totalCount').textContent = data.total;
+                document.getElementById('publishedCount').textContent = data.published;
+                document.getElementById('draftCount').textContent = data.draft;
+            })
+            .catch(function() {});
+        }
+
+        // --- Init ---
+        if (adminToken) {
+            fetch(API + '/api/labs/all', {
+                headers: { 'X-Admin-Token': adminToken }
+            })
+            .then(function(r) {
+                if (!r.ok) {
+                    localStorage.removeItem('admin_token');
+                    adminToken = '';
+                    return null;
+                }
+                return r.json();
+            })
+            .then(function(data) {
+                if (data) {
+                    loginOverlay.classList.add('hidden');
+                    renderData(data);
+                }
+            })
+            .catch(function() {});
+        }
+    </script>
+</body>
+</html>

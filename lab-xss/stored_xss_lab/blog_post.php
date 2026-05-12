@@ -54,6 +54,8 @@ if ($_POST && isset($_POST['comment'])) {
     foreach ($xssPatterns as $pattern) {
         if (preg_match($pattern, $newComment)) {
             $xssDetectedFromSubmission = true;
+            $_SESSION['xssDetectedFromSubmission'] = true;
+            $_SESSION['xss_solved'] = true;
             break;
         }
     }
@@ -171,9 +173,10 @@ if ($_POST && isset($_POST['comment'])) {
             ?>
 
             <?php if ($xssDetectedFromSubmission): ?>
+            <?php if (function_exists('trackFlag') && isset($_SESSION['flag'])) { trackFlag('xss-stored', $_SESSION['flag']); } ?>
             <div class="xss-success">
-                <p>You triggered XSS! Now try to steal the cookie.</p>
-                <p>The flag is stored in a cookie named <code>xss_flag</code>. Use your XSS payload to exfiltrate it.</p>
+                <p>Valid stored XSS payload detected.</p>
+                <p>Flag: <code><?php echo htmlspecialchars($_SESSION['flag'] ?? '', ENT_QUOTES, 'UTF-8'); ?></code></p>
             </div>
             <?php endif; ?>
 

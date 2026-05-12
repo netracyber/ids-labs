@@ -19,14 +19,24 @@ function trackFlag($labId, $flag) {
 trackHit('xss-stored-href');
 // ============ END TRACKING ============
 
-$flagGen = new FlagGenerator();
-$flag = $flagGen->generate_flag();
-$_SESSION['flag'] = $flag;
-setcookie('stored_href_flag', $flag, time()+3600, '/', '', false, false);
+if (!isset($_SESSION['flag'])) {
+    $flagGen = new FlagGenerator();
+    $_SESSION['flag'] = $flagGen->generate_flag();
+}
+$flag = $_SESSION['flag'];
 
 // Initialize comments array if it doesn't exist
 if (!isset($_SESSION['comments'])) {
     $_SESSION['comments'] = [];
+}
+
+foreach ($_SESSION['comments'] as $comment) {
+    $websiteLower = strtolower($comment['website'] ?? '');
+    if (strpos($websiteLower, 'javascript:alert(1)') !== false || strpos($websiteLower, 'alert(1)') !== false) {
+        $_SESSION['xss_solved'] = true;
+        trackFlag('xss-stored-href', $flag);
+        break;
+    }
 }
 
 // Function to display comments with potential XSS vulnerability in href attribute
@@ -99,18 +109,14 @@ function displayComments() {
                 const href = link.getAttribute('href');
                 if (href && (href.includes('javascript:alert(1)') || href.includes('alert(1)'))) {
                     setTimeout(function() {
-                        var cookies = document.cookie.split(';');
-                        var flagValue = '';
-                        for (var i = 0; i < cookies.length; i++) {
-                            var c = cookies[i].trim();
-                            if (c.startsWith('stored_href_flag=')) {
-                                flagValue = c.substring('stored_href_flag='.length);
-                                break;
-                            }
-                        }
-                        if (flagValue) {
-                            alert('Congratulations! Flag: ' + flagValue);
-                        }
+                        fetch('get_flag.php')
+                            .then(response => response.text())
+                            .then(flag => {
+                                alert('Congratulations! Flag: ' + flag.trim());
+                            })
+                            .catch(err => {
+                                alert('Error fetching flag.');
+                            });
                     }, 500);
                 }
             });

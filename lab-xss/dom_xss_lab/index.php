@@ -19,18 +19,19 @@ function trackFlag($labId, $flag) {
 trackHit('xss-dom');
 // ============ END TRACKING ============
 
-// Set the flag cookie if not already set
-if (!isset($_COOKIE['dom_xss_flag'])) {
-    $flag = 'IDS{' . bin2hex(random_bytes(16)) . '}';
-    setcookie('dom_xss_flag', $flag, time() + 3600, '/', '', false, false);
-} else {
-    $flag = $_COOKIE['dom_xss_flag'];
+// Generate flag in session (server-side)
+require_once __DIR__ . '/FlagGenerator.php';
+session_start();
+if (!isset($_SESSION['flag'])) {
+    $flagGen = new FlagGenerator();
+    $_SESSION['flag'] = $flagGen->generate_flag();
 }
+$flag = $_SESSION['flag'];
 
 // Read the HTML file
 $html_content = file_get_contents(__DIR__ . '/dom_xss.html');
 
-// Inject the flag into the page for client-side validation (read from cookie)
-$html_content = str_replace('</head>', '<script>const domXssFlag = document.cookie.split("; ").find(r=>r.startsWith("dom_xss_flag="))?.split("=")[1] || "";</script></head>', $html_content);
+// Inject the flag into the page for client-side validation (fetch from server)
+$html_content = str_replace('</head>', '<script>const domXssFlag = "";</script></head>', $html_content);
 
 echo $html_content;

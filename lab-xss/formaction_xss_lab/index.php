@@ -16,13 +16,13 @@ function trackFlag($labId, $flag) {
 trackHit('xss-formaction');
 // ============ END TRACKING ============
 
-// Generate dynamic flag and set cookie before any output
+// Generate flag in session (server-side)
 require_once __DIR__ . '/FlagGenerator.php';
+session_start();
 $flagGen = new FlagGenerator();
 $flag = $flagGen->generate_flag();
-if (!isset($_COOKIE['xss_flag'])) {
-    setcookie('xss_flag', $flag, time() + 3600, '/', '', false, false);
-}
+$_SESSION['flag'] = $flag;
+$_SESSION['xssDetected'] = false;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -254,6 +254,22 @@ if (!isset($_COOKIE['xss_flag'])) {
             if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['search'])) {
                 $searchTerm = $_POST['search'];
 
+                // Detect valid attribute-context XSS payloads
+                $lowerSearchTerm = strtolower($searchTerm);
+                $attributePayloadDetected = (
+                    (strpos($lowerSearchTerm, 'autofocus') !== false && strpos($lowerSearchTerm, 'onfocus=') !== false) ||
+                    (strpos($lowerSearchTerm, 'onmouseover=') !== false) ||
+                    (strpos($lowerSearchTerm, 'onclick=') !== false) ||
+                    (strpos($lowerSearchTerm, 'onerror=') !== false) ||
+                    (strpos($lowerSearchTerm, 'onload=') !== false)
+                );
+
+                if ($attributePayloadDetected) {
+                    $_SESSION['xssDetected'] = true;
+                    $_SESSION['xss_solved'] = true;
+                    trackFlag('xss-formaction', $_SESSION['flag']);
+                }
+
                 // VULNERABLE CODE: Directly echoing user input without encoding
                 // In a secure application, this would be:
                 // $searchTerm = htmlspecialchars($searchTerm, ENT_QUOTES, 'UTF-8');
@@ -276,12 +292,20 @@ if (!isset($_COOKIE['xss_flag'])) {
                         <ul>
                             <li>Your search term is displayed above in an input field</li>
                             <li>Notice it's submitted via <strong>POST</strong> method</li>
-                            <li>The flag is stored in a cookie named <code>xss_flag</code></li>
+                            <li>Trigger a payload that executes JavaScript from an HTML attribute context</li>
                             <li>Think about how you can escape the attribute and inject HTML</li>
                             <li>Consider HTML5 attributes that can execute JavaScript</li>
                         </ul>
                     </div>
                 </div>
+
+                <?php if (!empty($_SESSION['xssDetected'])): ?>
+                <div class="info-box" style="background: #d4edda; border-left-color: #28a745; color: #155724; margin-top: 15px;">
+                    <h4>Success</h4>
+                    <p>Valid attribute-context XSS payload detected.</p>
+                    <p>Flag: <code><?php echo htmlspecialchars($_SESSION['flag'], ENT_QUOTES, 'UTF-8'); ?></code></p>
+                </div>
+                <?php $_SESSION['xssDetected'] = false; endif; ?>
 
                 <?php
             }
@@ -289,8 +313,8 @@ if (!isset($_COOKIE['xss_flag'])) {
 
             <div class="info-box">
                 <h4>📚 Lab Information</h4>
-                <p><strong>Objective:</strong> Extract the flag from the <code>xss_flag</code> cookie and display it in an alert dialog.</p>
-                <p style="margin-top: 10px;"><strong>Challenge:</strong> This vulnerability uses POST request and requires understanding of HTML attribute injection.</p>
+                <p><strong>Objective:</strong> Submit a valid attribute-context XSS payload.</p>
+                <p style="margin-top: 10px;"><strong>Challenge:</strong> This vulnerability uses a POST request and requires understanding of HTML attribute injection.</p>
             </div>
         </div>
     </div>
@@ -299,7 +323,7 @@ if (!isset($_COOKIE['xss_flag'])) {
         // Additional client-side hints
         console.log('%c🎯 Formaction XSS Lab', 'font-size: 20px; font-weight: bold; color: #667eea;');
         console.log('%cHint: Check the README.md for detailed guidance', 'font-size: 14px; color: #666;');
-        console.log('%cThe flag is in a cookie. Use document.cookie to access it.', 'font-size: 12px; color: #999;');
+        console.log('%cSubmit a payload that triggers JavaScript execution from an HTML attribute context.', 'font-size: 12px; color: #999;');
     </script>
 </body>
 </html>

@@ -2,10 +2,16 @@
 session_start();
 require_once __DIR__ . '/FlagGenerator.php';
 
-$flagGen = new FlagGenerator();
-$flag = $flagGen->generate_flag();
-$_SESSION['flag'] = $flag;
-setcookie('dom_xss_flag', $flag, time() + 3600, '/', '', false, false);
+if (!isset($_SESSION['flag'])) {
+    $flagGen = new FlagGenerator();
+    $_SESSION['flag'] = $flagGen->generate_flag();
+}
+$flag = $_SESSION['flag'];
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['xss_success'])) {
+    $_SESSION['xss_solved'] = true;
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -116,15 +122,20 @@ setcookie('dom_xss_flag', $flag, time() + 3600, '/', '', false, false);
             // Check if the search query contains common XSS patterns to show the flag
             const xssPattern = /(<script|on\w+\s*=|<img[^>]*onerror\s*=|<svg[^>]*onload\s*=|javascript:|<iframe|<object|<embed|<div[^>]*onclick\s*=|<a[^>]*onmouseover\s*=)/i;
             if (xssPattern.test(searchQuery)) {
-                // Show success message and flag from cookie
-                function getCookieVal(name) {
-                    var value = '; ' + document.cookie;
-                    var parts = value.split('; ' + name + '=');
-                    if (parts.length === 2) return parts.pop().split(';').shift();
-                    return '';
-                }
-                var flagValue = getCookieVal('dom_xss_flag') || 'FLAG_PLACEHOLDER';
-                document.write('<div style="position: fixed; top: 60px; right: 10px; background-color: #d4edda; padding: 15px; border: 1px solid #c3e6cb; border-radius: 4px; color: #155724; font-weight: bold;">Congratulations! You\'ve successfully executed a DOM XSS attack!<br>Flag: <strong>' + flagValue + '</strong></div>');
+                // Mark the challenge solved server-side before fetching the gated flag
+                fetch('dom_xss.php', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                    body: 'xss_success=1'
+                })
+                    .then(() => fetch('get_flag.php'))
+                    .then(response => response.text())
+                    .then(flag => {
+                        document.write('<div style="position: fixed; top: 60px; right: 10px; background-color: #d4edda; padding: 15px; border: 1px solid #c3e6cb; border-radius: 4px; color: #155724; font-weight: bold;">Congratulations! You\'ve successfully executed a DOM XSS attack!<br>Flag: <strong>' + flag.trim() + '</strong></div>');
+                    })
+                    .catch(err => {
+                        document.write('<div style="position: fixed; top: 60px; right: 10px; background-color: #f8d7da; padding: 15px; border: 1px solid #f5c6cb; border-radius: 4px; color: #721c24;">Error fetching flag.</div>');
+                    });
             }
         }
     </script>

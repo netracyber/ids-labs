@@ -1,6 +1,5 @@
 <?php
 session_start();
-ob_start();
 require_once __DIR__ . '/FlagGenerator.php';
 
 // ============ TRACKING ============
@@ -20,14 +19,12 @@ function trackFlag($labId, $flag) {
 trackHit('xss-js-string');
 // ============ END TRACKING ============
 
-// Generate dynamic flag using FlagGenerator
-$flagGen = new FlagGenerator();
-$flag = $flagGen->generate_flag();
-$_SESSION['flag'] = $flag;
+if (!isset($_SESSION['flag'])) {
+    $flagGen = new FlagGenerator();
+    $_SESSION['flag'] = $flagGen->generate_flag();
+}
 
-// Set flag in a cookie (non-httpOnly) so JS can read it
-// Must be called BEFORE any output - ob_start() above ensures this
-setcookie('js_string_flag', $flag, time() + 3600, '/', '', false, false);
+$flag = $_SESSION['flag'];
 
 // Get the search query from the GET parameter
 $search = isset($_GET['search']) ? $_GET['search'] : '';
@@ -207,7 +204,11 @@ $search_attr_safe = htmlspecialchars($search, ENT_QUOTES, 'UTF-8');
             </div>
         </div>
 
-        <div id="xss-result"></div>
+        <div id="xss-result" <?php if ($xss_detected) echo 'style="display:block"'; ?>>
+            <?php if ($xss_detected): ?>
+                XSS Detected! Your flag: <code style="font-family:monospace;background:rgba(0,0,0,0.1);padding:2px 8px;border-radius:4px;"><?php echo htmlspecialchars($flag); ?></code>
+            <?php endif; ?>
+        </div>
     </div>
 
     <div class="footer">
@@ -222,10 +223,6 @@ $search_attr_safe = htmlspecialchars($search, ENT_QUOTES, 'UTF-8');
 
         // Track the search query for analytics
         console.log("Search query: " + searchQuery);
-
-        // XSS detection: check if the search resulted in successful XSS execution
-        // The flag is stored in a cookie and should be read via document.cookie
     </script>
 </body>
 </html>
-<?php ob_end_flush(); ?>

@@ -19,10 +19,17 @@ function trackFlag($labId, $flag) {
 trackHit('xss-dom-innerhtml');
 // ============ END TRACKING ============
 
-$flagGen = new FlagGenerator();
-$flag = $flagGen->generate_flag();
-$_SESSION['flag'] = $flag;
-setcookie('dom_innerhtml_flag', $flag, time() + 3600, '/', '', false, false);
+if (!isset($_SESSION['flag'])) {
+    $flagGen = new FlagGenerator();
+    $_SESSION['flag'] = $flagGen->generate_flag();
+}
+$flag = $_SESSION['flag'];
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['xss_success'])) {
+    $_SESSION['xss_solved'] = true;
+    trackFlag('xss-dom-innerhtml', $flag);
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -166,17 +173,20 @@ setcookie('dom_innerhtml_flag', $flag, time() + 3600, '/', '', false, false);
             document.getElementById('searchResults').innerHTML += '<div class="blog-post"><h4>Understanding XSS Attacks</h4><p>Cross-site scripting (XSS) is a type of security vulnerability found in web applications...</p></div>';
             document.getElementById('searchResults').innerHTML += '<div class="blog-post"><h4>Best Practices for Secure Coding</h4><p>Follow these best practices to prevent security vulnerabilities in your web applications...</p></div>';
 
-            // Set up a function that can be called by successful XSS payloads
-            // Flag is stored in a cookie set by PHP - read from cookie to avoid source code exposure
-            function getCookie(name) {
-                var value = '; ' + document.cookie;
-                var parts = value.split('; ' + name + '=');
-                if (parts.length === 2) return parts.pop().split(';').shift();
-                return '';
-            }
             window.showFlag = function() {
-                var flagValue = getCookie('dom_innerhtml_flag') || 'FLAG_PLACEHOLDER';
-                alert('Congratulations! Flag: ' + flagValue);
+                fetch('dom_innerhtml_xss.php', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                    body: 'xss_success=1'
+                })
+                    .then(() => fetch('get_flag.php'))
+                    .then(response => response.text())
+                    .then(flag => {
+                        alert('Congratulations! Flag: ' + flag.trim());
+                    })
+                    .catch(err => {
+                        alert('Error fetching flag.');
+                    });
             };
 
             // Check if the search term contains the word "script" - block these payloads

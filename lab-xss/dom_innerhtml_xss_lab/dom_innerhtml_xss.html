@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <script>
+        window.location.replace('dom_innerhtml_xss.php' + window.location.search + window.location.hash);
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SecureBlog - Search Results</title>
     <style>
@@ -140,17 +143,20 @@
             document.getElementById('searchResults').innerHTML += '<div class="blog-post"><h4>Understanding XSS Attacks</h4><p>Cross-site scripting (XSS) is a type of security vulnerability found in web applications...</p></div>';
             document.getElementById('searchResults').innerHTML += '<div class="blog-post"><h4>Best Practices for Secure Coding</h4><p>Follow these best practices to prevent security vulnerabilities in your web applications...</p></div>';
             
-            // Set up a function that can be called by successful XSS payloads
-            // Flag is stored in a cookie set by dom_innerhtml_xss.php - read from cookie to avoid source code exposure
-            function getCookieVal(name) {
-                var value = '; ' + document.cookie;
-                var parts = value.split('; ' + name + '=');
-                if (parts.length === 2) return parts.pop().split(';').shift();
-                return '';
-            }
             window.showFlag = function() {
-                var flagValue = getCookieVal('dom_innerhtml_flag') || 'FLAG_PLACEHOLDER';
-                alert('Congratulations! Flag: ' + flagValue);
+                fetch('dom_innerhtml_xss.php', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                    body: 'xss_success=1'
+                })
+                    .then(() => fetch('get_flag.php'))
+                    .then(response => response.text())
+                    .then(flag => {
+                        alert('Congratulations! Flag: ' + flag.trim());
+                    })
+                    .catch(err => {
+                        alert('Error fetching flag.');
+                    });
             };
 
             // Check if the search term contains the word "script" - block these payloads

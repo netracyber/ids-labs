@@ -343,5 +343,15 @@ $random_clue = $clues[array_rand($clues)];
             console.log('Saving note:', noteInput.value);
         });
     </script>
+<?php if (isset($_SESSION["xss_solved"]) && $_SESSION["xss_solved"]): ?>
+<script>
+fetch("get_flag.php").then(function(r){return r.text()}).then(function(f){
+    var d=document.createElement("div");
+    d.style="position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#d4edda;border:2px solid #28a745;padding:20px 30px;border-radius:10px;z-index:99999;font-family:monospace;font-size:16px;color:#155724;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.3);";
+    d.innerHTML="<b>XSS Detected!</b><br>Your flag: <code>"+f.trim()+"</code>";
+    document.body.appendChild(d);
+});
+</script>
+<?php endif; ?>
 </body>
 </html>

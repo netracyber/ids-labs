@@ -1,8 +1,12 @@
 <?php
+session_start();
 require_once __DIR__ . '/FlagGenerator.php';
-$flagGen = new FlagGenerator();
-$flag = $flagGen->generate_flag();
-setcookie('json_xss_flag', $flag, time()+3600, '/', '', false, false);
+
+if (!isset($_SESSION['flag'])) {
+    $flagGen = new FlagGenerator();
+    $_SESSION['flag'] = $flagGen->generate_flag();
+}
+$flag = $_SESSION['flag'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -108,15 +112,8 @@ setcookie('json_xss_flag', $flag, time()+3600, '/', '', false, false);
     </div>
 
     <script>
-        function getFlagFromCookie() {
-            var cookies = document.cookie.split(';');
-            for (var i = 0; i < cookies.length; i++) {
-                var c = cookies[i].trim();
-                if (c.startsWith('json_xss_flag=')) {
-                    return c.substring('json_xss_flag='.length);
-                }
-            }
-            return '';
+        function fetchFlag() {
+            return fetch('get_flag.php').then(r => r.text());
         }
 
         // Simulate API response with potential XSS vulnerability
@@ -163,16 +160,18 @@ setcookie('json_xss_flag', $flag, time()+3600, '/', '', false, false);
                 username.toLowerCase().includes('onload') ||
                 username.toLowerCase().includes('img src=')) {
 
-                var flagValue = getFlagFromCookie();
-                if (flagValue) {
-                    document.getElementById('flagText').textContent = flagValue;
-                    document.getElementById('flagContainer').style.display = 'block';
+                fetchFlag().then(flagValue => {
+                    if (flagValue) {
+                        document.getElementById('flagText').textContent = flagValue.trim();
+                        document.getElementById('flagContainer').style.display = 'block';
 
-                    // Show alert with flag when XSS is detected
-                    setTimeout(function() {
-                        alert('Congratulations! Flag: ' + flagValue);
-                    }, 100);
-                }
+                        setTimeout(function() {
+                            alert('Congratulations! Flag: ' + flagValue.trim());
+                        }, 100);
+                    }
+                }).catch(() => {
+                    alert('Error fetching flag.');
+                });
             }
         }
     </script>

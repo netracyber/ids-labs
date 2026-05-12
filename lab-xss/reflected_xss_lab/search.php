@@ -27,6 +27,10 @@ $xssPatterns = [
 foreach ($xssPatterns as $pattern) {
     if (preg_match($pattern, $searchTerm)) {
         $xssDetected = true;
+        $_SESSION['xss_solved'] = true;
+        if (function_exists('trackFlag')) {
+            trackFlag('xss-reflected', $flag);
+        }
         break;
     }
 }

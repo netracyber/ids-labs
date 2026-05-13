@@ -3,8 +3,8 @@
 Complete port mapping documentation for all XSS laboratory environments.
 
 ## Overview
-- **Total Labs**: 19 labs (15 main labs + 4 standalone labs)
-- **Port Range**: 8020-8038
+- **Total Labs**: 20 labs (15 main labs + 5 standalone labs)
+- **Port Range**: 8020-8048
 - **Base URL**: `http://localhost:<PORT>`
 
 ---
@@ -39,6 +39,7 @@ Complete port mapping documentation for all XSS laboratory environments.
 | 8036 | lab-xss-event-handler | lab-xss-event-handler-lab-xss-event-handler-1 | http://localhost:8036 | Event Handler XSS - injeksi via event handler (onclick, dll) |
 | 8037 | lab-xss-js-string | lab-xss-js-string-lab-xss-js-string-1 | http://localhost:8037 | JS String XSS - variasi lain dari JavaScript string injection |
 | 8038 | lab-xss-medium | lab-xss-medium-lab-xss-medium-1 | http://localhost:8038 | Medium XSS Lab - lab dengan tingkat kompleksitas medium |
+| 8048 | lab-xss-lfi-medium-hard | lab-xss-lfi-medium-hard-lab-xss-lfi-medium-hard-1 | http://localhost:8048 | LFI Medium-Hard Lab - path traversal dan file inclusion |
 
 ---
 
@@ -94,6 +95,7 @@ cd lab-xss-dom-location && docker-compose down
 cd ../lab-xss-event-handler && docker-compose down
 cd ../lab-xss-js-string && docker-compose down
 cd ../lab-xss-medium && docker-compose down
+cd ../lab-xss-lfi-medium-hard && docker-compose down
 ```
 
 ### Restart specific lab
@@ -123,7 +125,7 @@ docker-compose logs -f
 ### Quick test command
 ```bash
 # Test all labs are responding
-for port in {8020..8038}; do
+for port in {8020..8048}; do
   echo -n "Port $port: "
   curl -s -o /dev/null -w "%{http_code}" http://localhost:$port/ && echo " ✅"
 done
@@ -180,6 +182,7 @@ cd lab-xss-dom-location && docker-compose down
 cd ../lab-xss-event-handler && docker-compose down
 cd ../lab-xss-js-string && docker-compose down
 cd ../lab-xss-medium && docker-compose down
+cd ../lab-xss-lfi-medium-hard && docker-compose down
 cd ..
 
 # Start all
@@ -219,12 +222,14 @@ docker-compose up -d
 │   └── docker-compose.yml
 ├── lab-xss-js-string/          # Port 8037 (standalone)
 │   └── docker-compose.yml
-└── lab-xss-medium/             # Port 8038 (standalone)
+├── lab-xss-medium/             # Port 8038 (standalone)
+│   └── docker-compose.yml
+└── lab-xss-lfi-medium-hard/    # Port 8039 (standalone)
     └── docker-compose.yml
 ```
 
 ---
 
-*Last Updated: 2026-02-28*
-*Total Labs: 19*
-*Port Range: 8020-8038*
+*Last Updated: 2026-05-13*
+*Total Labs: 20*
+*Port Range: 8020-8048*

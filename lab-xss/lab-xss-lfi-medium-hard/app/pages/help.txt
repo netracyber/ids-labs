@@ -1,0 +1,7 @@
+Help
+
+- Use the 'doc' parameter to select a document.
+- Only .txt documents under pages/ are allowed.
+- Security filters block traversal patterns.
+
+(Internal note: some clients send encoded paths.)

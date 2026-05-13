@@ -1,0 +1,3 @@
+Archived internal document.
+
+This file is not linked from the UI, but the viewer can reach it if path handling is bypassed.

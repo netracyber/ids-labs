@@ -23,6 +23,7 @@ Kumpulan lab keamanan web untuk mempelajari berbagai teknik **Cross-Site Scripti
 | 13 | **JS String Context Lab** | **Reflected JS String** | **Easy** | **Random** |
 | 14 | **Document.write Lab** | **Reflected document.write** | **Easy** | **Random** |
 | 15 | **innerHTML Lab** | **Reflected innerHTML** | **Easy** | **Random** |
+| 16 | **LFI Medium-Hard Lab** | **Local File Inclusion** | **Medium-Hard** | **8039** |
 
 ## 🆕 Lab Baru
 
@@ -60,6 +61,13 @@ Reflected XSS melalui properti **`innerHTML`** pada aplikasi note-taking.
 - **Context**: element.innerHTML property
 - **Start**: `docker compose up innerhtml-lab -d`
 - **Docs**: [innerhtml_lab/README.md](innerhtml_lab/README.md)
+
+### LFI Medium-Hard Lab
+Lab standalone untuk **Local File Inclusion / Path Traversal** dengan filter traversal sederhana yang bisa dibypass.
+- **Parameter**: `doc`
+- **Context**: file path resolution
+- **Start**: `cd lab-xss-lfi-medium-hard && docker-compose up -d`
+- **Docs**: [lab-xss-lfi-medium-hard/README.md](lab-xss-lfi-medium-hard/README.md)
 
 #### Perbedaan Kelima Konteks Injeksi:
 

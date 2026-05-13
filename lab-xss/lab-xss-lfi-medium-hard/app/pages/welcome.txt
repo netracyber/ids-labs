@@ -1,0 +1,5 @@
+Welcome to DocuView.
+
+This viewer is restricted to approved documents only.
+
+If you are seeing this, the allowlist is working.

@@ -7,7 +7,7 @@ services:
     ports:
       - "8039:80"
     volumes:
-      - ./logs:/var/log/apache2
+      - lfi-logs:/var/log/apache2
     restart: unless-stopped
     networks:
       - lfi-network
@@ -18,3 +18,6 @@ networks:
     driver: bridge
   tracking-network:
     external: true
+
+volumes:
+  lfi-logs:

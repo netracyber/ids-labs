@@ -10,6 +10,7 @@
 **Container Name:** lfi-lab
 **Status:** ✅ Running
 **Auto-restart:** ✅ Enabled (unless-stopped)
+**Storage:** ✅ Self-contained in Docker (no host-mounted app or secret data)
 
 ---
 
@@ -325,7 +326,7 @@ curl "http://localhost:8039/lfi-lab/?level=5&file=/var/log/apache2/access.log"
 │   ├── flag3.txt             # Level 3 flag
 │   ├── flag4.txt             # Level 4 flag
 │   └── flag5.txt             # Level 5 flag
-└── logs/                      # Apache logs volume
+└── lfi-logs                   # Docker-managed Apache logs volume
 ```
 
 ### **Container Management:**

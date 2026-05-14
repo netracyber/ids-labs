@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+  broken-access-control-easy-5:
+    build: .
+    container_name: broken-access-control-easy-5
+    ports:
+      - "8079:80"
+    volumes:
+      - ./logs:/var/log/apache2
+    restart: unless-stopped
+    networks:
+      - lab-network
+      - tracking-network
+
+networks:
+  lab-network:
+    driver: bridge
+  tracking-network:
+    external: true

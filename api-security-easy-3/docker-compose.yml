@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+  api-security-easy-3:
+    build: .
+    container_name: api-security-easy-3
+    ports:
+      - "8072:80"
+    volumes:
+      - ./logs:/var/log/apache2
+    restart: unless-stopped
+    networks:
+      - lab-network
+      - tracking-network
+
+networks:
+  lab-network:
+    driver: bridge
+  tracking-network:
+    external: true

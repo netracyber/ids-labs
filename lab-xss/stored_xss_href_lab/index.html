@@ -168,6 +168,26 @@
     </div>
 
     <script>
+        function fetchFlag() {
+            return fetch('get_flag.php').then(r => r.text());
+        }
+
+        function checkForXSS() {
+            const links = document.querySelectorAll('#comments-container a.comment-author');
+            links.forEach(function(link) {
+                const href = link.getAttribute('href') || '';
+                if (href.includes('javascript:alert(1)') || href.includes('alert(1)')) {
+                    fetchFlag()
+                        .then(flag => {
+                            alert('Congratulations! Flag: ' + flag.trim());
+                        })
+                        .catch(() => {
+                            alert('Error fetching flag.');
+                        });
+                }
+            });
+        }
+
         // Load comments dynamically
         fetch('view_post.php')
             .then(response => response.text())
@@ -178,6 +198,7 @@
                 const commentsDiv = temp.querySelector('#comments-container');
                 if (commentsDiv) {
                     document.getElementById('comments-container').innerHTML = commentsDiv.innerHTML;
+                    checkForXSS();
                 }
             })
             .catch(error => console.error('Error loading comments:', error));
